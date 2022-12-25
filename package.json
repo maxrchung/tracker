@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@expo/webpack-config": "^0.17.2",
+    "@types/react-dom": "^18.0.10",
+    "@types/react-native": "^0.70.8",
     "expo": "~47.0.9",
     "expo-status-bar": "~1.4.2",
     "react": "18.1.0",
