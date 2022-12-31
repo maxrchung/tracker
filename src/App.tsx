@@ -1,46 +1,28 @@
-import AppLayout from "@cloudscape-design/components/app-layout";
-import ContentLayout from "@cloudscape-design/components/content-layout";
 import Entries from "./Entries";
-
-import TopNavigation from "@cloudscape-design/components/top-navigation";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import Login from "./Login";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
+import Layout from "./Layout";
+import Home from "./Home";
+import Analytics from "./Analytics";
+import Error from "./Error";
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<Layout />} errorElement={<Error />}>
+      <Route path="/" element={<Home />} />
+      <Route path="entries" element={<Entries />} />
+      <Route path="analytics" element={<Analytics />} />
+    </Route>
+  )
+);
 
 export default function App() {
-  const { signOut, user } = useAuthenticator();
-
-  return !user ? (
-    <Login />
-  ) : (
-    <>
-      <div id="h" style={{ position: "sticky", top: 0, zIndex: 1002 }}>
-        <TopNavigation
-          i18nStrings={{
-            overflowMenuTriggerText: "More",
-            overflowMenuTitleText: "All",
-          }}
-          identity={{
-            href: "#",
-            title: "tracker",
-          }}
-          utilities={[
-            {
-              type: "menu-dropdown",
-              text: user?.attributes?.email ?? "",
-              iconName: "user-profile",
-              items: [{ id: "sign-out", text: "Sign out" }],
-              onItemClick: signOut,
-            },
-          ]}
-        />
-      </div>
-      <AppLayout
-        content={
-          <ContentLayout>
-            <Entries />
-          </ContentLayout>
-        }
-      />
-    </>
-  );
+  const { user } = useAuthenticator();
+  return !user ? <Login /> : <RouterProvider router={router} />;
 }
