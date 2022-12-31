@@ -10,6 +10,11 @@
       "StackName": "amplify-tracker-dev-21452",
       "StackId": "arn:aws:cloudformation:us-west-1:342191180882:stack/amplify-tracker-dev-21452/cce05010-882a-11ed-9dde-0213401a1cc7",
       "AmplifyAppId": "d3piwft40grsdd"
+    },
+    "categories": {
+      "auth": {
+        "tracker7f633f77": {}
+      }
     }
   }
 }

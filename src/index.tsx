@@ -2,14 +2,24 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { Amplify } from "aws-amplify";
+import awsExports from "./aws-exports";
+
 import "@cloudscape-design/global-styles/index.css";
+import "@aws-amplify/ui-react/styles.css";
+import { Authenticator } from "@aws-amplify/ui-react";
+
+Amplify.configure(awsExports);
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
-    <App />
+    <Authenticator.Provider>
+      <App />
+    </Authenticator.Provider>
   </React.StrictMode>
 );
 
