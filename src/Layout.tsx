@@ -1,13 +1,24 @@
 import AppLayout from "@cloudscape-design/components/app-layout";
-import ContentLayout from "@cloudscape-design/components/content-layout";
 import TopNavigation from "@cloudscape-design/components/top-navigation";
 import { useAuthenticator } from "@aws-amplify/ui-react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useMatches } from "react-router-dom";
 import SideNavigation from "@cloudscape-design/components/side-navigation";
+import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
 
 export default function Layout() {
   const { signOut, user } = useAuthenticator();
   const location = useLocation();
+  console.log(location);
+
+  const matches = useMatches();
+  const breadcrumbs =
+    location.pathname === "/"
+      ? []
+      : matches.map((match) => ({
+          text: (match.handle as any).crumb,
+          href: match.pathname,
+        }));
+
   return (
     <>
       <div id="h" style={{ position: "sticky", top: 0, zIndex: 1002 }}>
@@ -23,21 +34,28 @@ export default function Layout() {
           utilities={[
             {
               type: "menu-dropdown",
-              text: user?.attributes?.email ?? "",
+              text: user?.attributes?.email.split("@")[0] ?? "",
               iconName: "user-profile",
-              items: [{ id: "sign-out", text: "Sign out" }],
+              description: user?.attributes?.email ?? "",
+              items: [
+                {
+                  id: "sign-out",
+                  text: "Sign out",
+                },
+              ],
               onItemClick: signOut,
             },
           ]}
         />
       </div>
       <AppLayout
+        toolsHide
+        headerSelector="#h"
+        breadcrumbs={
+          <BreadcrumbGroup items={breadcrumbs} ariaLabel="Breadcrumbs" />
+        }
         navigation={
           <SideNavigation
-            header={{
-              href: "/",
-              text: "tracker",
-            }}
             activeHref={location.pathname}
             items={[
               {
@@ -53,11 +71,7 @@ export default function Layout() {
             ]}
           />
         }
-        content={
-          <ContentLayout>
-            <Outlet />
-          </ContentLayout>
-        }
+        content={<Outlet />}
       />
     </>
   );

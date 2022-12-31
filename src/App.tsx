@@ -14,10 +14,23 @@ import Error from "./Error";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<Layout />} errorElement={<Error />}>
-      <Route path="/" element={<Home />} />
-      <Route path="entries" element={<Entries />} />
-      <Route path="analytics" element={<Analytics />} />
+    <Route
+      path="/"
+      element={<Layout />}
+      handle={{ crumb: "tracker" }}
+      errorElement={<Error />}
+    >
+      <Route path="/" element={<Home />} handle={{ crumb: "tracker" }} />
+      <Route
+        path="entries"
+        element={<Entries />}
+        handle={{ crumb: "Entries" }}
+      />
+      <Route
+        path="analytics"
+        element={<Analytics />}
+        handle={{ crumb: "Analytics" }}
+      />
     </Route>
   )
 );

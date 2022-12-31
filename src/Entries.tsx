@@ -2,10 +2,10 @@ import * as React from "react";
 import Table from "@cloudscape-design/components/table";
 import Box from "@cloudscape-design/components/box";
 import Button from "@cloudscape-design/components/button";
-import TextFilter from "@cloudscape-design/components/text-filter";
 import Header from "@cloudscape-design/components/header";
 import Pagination from "@cloudscape-design/components/pagination";
 import CollectionPreferences from "@cloudscape-design/components/collection-preferences";
+import SpaceBetween from "@cloudscape-design/components/space-between";
 
 export default function Entries() {
   const [selectedItems, setSelectedItems] = React.useState([
@@ -17,8 +17,12 @@ export default function Entries() {
       size: "Large",
     },
   ]);
+
   return (
     <Table
+      variant="full-page"
+      resizableColumns
+      stickyHeader
       onSelectionChange={({ detail }) => setSelectedItems(detail.selectedItems)}
       selectedItems={selectedItems}
       ariaLabels={{
@@ -99,28 +103,30 @@ export default function Entries() {
         },
       ]}
       loadingText="Loading resources"
-      selectionType="multi"
+      selectionType="single"
       trackBy="name"
       visibleColumns={["variable", "value", "type", "description"]}
       empty={
         <Box textAlign="center" color="inherit">
-          <b>No resources</b>
+          <b>No entries</b>
           <Box padding={{ bottom: "s" }} variant="p" color="inherit">
-            No resources to display.
+            No entries to display.
           </Box>
-          <Button>Create resource</Button>
+          <Button>Create entry</Button>
         </Box>
-      }
-      filter={
-        <TextFilter filteringPlaceholder="Find resources" filteringText="" />
       }
       header={
         <Header
-          counter={
-            selectedItems.length ? "(" + selectedItems.length + "/10)" : "(10)"
+          variant="h1"
+          actions={
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button>Edit</Button>
+              <Button>Delete</Button>
+              <Button variant="primary">Create entry</Button>
+            </SpaceBetween>
           }
         >
-          Table with common features
+          Entries
         </Header>
       }
       pagination={
