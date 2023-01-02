@@ -11,6 +11,7 @@ import Layout from "./Layout";
 import Home from "./Home";
 import Analytics from "./Analytics";
 import Error from "./Error";
+import CreateEntry from "./CreateEntry";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,11 +22,14 @@ const router = createBrowserRouter(
       errorElement={<Error />}
     >
       <Route path="/" element={<Home />} handle={{ crumb: "tracker" }} />
-      <Route
-        path="entries"
-        element={<Entries />}
-        handle={{ crumb: "Entries" }}
-      />
+      <Route path="entries" handle={{ crumb: "Entries" }}>
+        <Route index element={<Entries />} />
+        <Route
+          path="create"
+          element={<CreateEntry />}
+          handle={{ crumb: "Create entry" }}
+        />
+      </Route>
       <Route
         path="analytics"
         element={<Analytics />}

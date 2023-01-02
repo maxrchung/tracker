@@ -122,7 +122,9 @@ export default function Entries() {
             <SpaceBetween direction="horizontal" size="xs">
               <Button>Edit</Button>
               <Button>Delete</Button>
-              <Button variant="primary">Create entry</Button>
+              <Button variant="primary" href="/entries/create">
+                Create entry
+              </Button>
             </SpaceBetween>
           }
         >

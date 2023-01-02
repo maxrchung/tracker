@@ -8,16 +8,17 @@ import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
 export default function Layout() {
   const { signOut, user } = useAuthenticator();
   const location = useLocation();
-  console.log(location);
 
   const matches = useMatches();
   const breadcrumbs =
     location.pathname === "/"
       ? []
-      : matches.map((match) => ({
-          text: (match.handle as any).crumb,
-          href: match.pathname,
-        }));
+      : matches
+          .filter((match) => match.handle as any)
+          .map((match) => ({
+            text: (match.handle as any).crumb,
+            href: match.pathname,
+          }));
 
   return (
     <>
