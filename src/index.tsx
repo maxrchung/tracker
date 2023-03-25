@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import Routing from "./Routing";
 import { Amplify } from "aws-amplify";
 import "@cloudscape-design/global-styles/index.css";
 import { Authenticator } from "@aws-amplify/ui-react";
@@ -22,7 +22,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Authenticator.Provider>
-      <App />
+      <Routing />
     </Authenticator.Provider>
   </React.StrictMode>
 );

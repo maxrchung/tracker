@@ -39,7 +39,7 @@ const router = createBrowserRouter(
   )
 );
 
-export default function App() {
+export default function Routing() {
   const { user } = useAuthenticator();
   return !user ? <Login /> : <RouterProvider router={router} />;
 }
