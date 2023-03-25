@@ -4,6 +4,9 @@ module.exports = {
     // By extending from a plugin config, we can get recommended rules without having to add them manually.
     "eslint:recommended",
     "plugin:react/recommended",
+    // Removes requirement for importing React into every file
+    // https://stackoverflow.com/a/72259787
+    "plugin:react/jsx-runtime",
     "plugin:import/recommended",
     "plugin:jsx-a11y/recommended",
     "plugin:@typescript-eslint/recommended",
