@@ -112,7 +112,7 @@ export default function Entries() {
           <Box padding={{ bottom: "s" }} variant="p" color="inherit">
             No entries to display.
           </Box>
-          <Button>Create entry</Button>
+          <Button>Add entry</Button>
         </Box>
       }
       header={
@@ -123,7 +123,7 @@ export default function Entries() {
               <Button>Edit</Button>
               <Button>Delete</Button>
               <Button variant="primary" href="/entries/create">
-                Create entry
+                Add entry
               </Button>
             </SpaceBetween>
           }

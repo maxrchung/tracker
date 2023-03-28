@@ -11,7 +11,7 @@ import Layout from "./Layout";
 import Home from "./Home";
 import Analytics from "./Analytics";
 import Error from "./Error";
-import CreateEntry from "./CreateEntry";
+import AddEntry from "./AddEntry";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -26,7 +26,7 @@ const router = createBrowserRouter(
         <Route index element={<Entries />} />
         <Route
           path="create"
-          element={<CreateEntry />}
+          element={<AddEntry />}
           handle={{ crumb: "Create entry" }}
         />
       </Route>
