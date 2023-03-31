@@ -22,7 +22,7 @@ export default function AddEntry() {
     {
       key: "some-key-1",
       value: "some-value-1",
-      type: { label: "text", value: "text" },
+      type: { label: "Text", value: "text" },
     },
     {
       key: "some-key-2",
