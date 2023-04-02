@@ -14,6 +14,12 @@
     "categories": {
       "auth": {
         "tracker7f633f77": {}
+      },
+      "api": {
+        "tracker": {}
+      },
+      "analytics": {
+        "tracker": {}
       }
     }
   }

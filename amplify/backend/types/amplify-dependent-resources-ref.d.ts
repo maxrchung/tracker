@@ -11,5 +11,19 @@ export type AmplifyDependentResourcesAttributes = {
             "AppClientIDWeb": "string",
             "AppClientID": "string"
         }
+    },
+    "api": {
+        "tracker": {
+            "GraphQLAPIKeyOutput": "string",
+            "GraphQLAPIIdOutput": "string",
+            "GraphQLAPIEndpointOutput": "string"
+        }
+    },
+    "analytics": {
+        "tracker": {
+            "Region": "string",
+            "Id": "string",
+            "appName": "string"
+        }
     }
 }

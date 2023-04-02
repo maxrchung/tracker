@@ -1,0 +1,21 @@
+{
+    "appName": "tracker",
+    "roleName": "pinpointLambdaRoleed5a069a",
+    "cloudformationPolicyName": "cloudformationPolicyed5a069a",
+    "cloudWatchPolicyName": "cloudWatchPolicyed5a069a",
+    "pinpointPolicyName": "pinpointPolicyed5a069a",
+    "authPolicyName": "pinpoint_amplify_ed5a069a",
+    "unauthPolicyName": "pinpoint_amplify_ed5a069a",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    }
+}
