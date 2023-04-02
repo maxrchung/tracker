@@ -1,4 +1,18 @@
 export type AmplifyDependentResourcesAttributes = {
+    "analytics": {
+        "tracker": {
+            "Region": "string",
+            "Id": "string",
+            "appName": "string"
+        }
+    },
+    "api": {
+        "tracker": {
+            "GraphQLAPIKeyOutput": "string",
+            "GraphQLAPIIdOutput": "string",
+            "GraphQLAPIEndpointOutput": "string"
+        }
+    },
     "auth": {
         "tracker7f633f77": {
             "IdentityPoolId": "string",
@@ -10,20 +24,6 @@ export type AmplifyDependentResourcesAttributes = {
             "UserPoolName": "string",
             "AppClientIDWeb": "string",
             "AppClientID": "string"
-        }
-    },
-    "api": {
-        "tracker": {
-            "GraphQLAPIKeyOutput": "string",
-            "GraphQLAPIIdOutput": "string",
-            "GraphQLAPIEndpointOutput": "string"
-        }
-    },
-    "analytics": {
-        "tracker": {
-            "Region": "string",
-            "Id": "string",
-            "appName": "string"
         }
     }
 }

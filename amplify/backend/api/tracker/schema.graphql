@@ -1,5 +1,5 @@
-type Entry @model @auth(rules: [{ allow: owner }]) {
+type Entry @model @auth(rules: [{allow: owner}]) {
   id: ID!
   name: String!
   value: Float
-}
+} 
