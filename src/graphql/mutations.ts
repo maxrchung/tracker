@@ -9,7 +9,7 @@ export const createEntry = /* GraphQL */ `
   ) {
     createEntry(input: $input, condition: $condition) {
       id
-      name
+      nameId
       value
       createdAt
       updatedAt
@@ -24,7 +24,7 @@ export const updateEntry = /* GraphQL */ `
   ) {
     updateEntry(input: $input, condition: $condition) {
       id
-      name
+      nameId
       value
       createdAt
       updatedAt
@@ -39,8 +39,50 @@ export const deleteEntry = /* GraphQL */ `
   ) {
     deleteEntry(input: $input, condition: $condition) {
       id
-      name
+      nameId
       value
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const createEntryName = /* GraphQL */ `
+  mutation CreateEntryName(
+    $input: CreateEntryNameInput!
+    $condition: ModelEntryNameConditionInput
+  ) {
+    createEntryName(input: $input, condition: $condition) {
+      id
+      name
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const updateEntryName = /* GraphQL */ `
+  mutation UpdateEntryName(
+    $input: UpdateEntryNameInput!
+    $condition: ModelEntryNameConditionInput
+  ) {
+    updateEntryName(input: $input, condition: $condition) {
+      id
+      name
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const deleteEntryName = /* GraphQL */ `
+  mutation DeleteEntryName(
+    $input: DeleteEntryNameInput!
+    $condition: ModelEntryNameConditionInput
+  ) {
+    deleteEntryName(input: $input, condition: $condition) {
+      id
+      name
       createdAt
       updatedAt
       owner

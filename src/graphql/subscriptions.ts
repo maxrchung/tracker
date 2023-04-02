@@ -9,7 +9,7 @@ export const onCreateEntry = /* GraphQL */ `
   ) {
     onCreateEntry(filter: $filter, owner: $owner) {
       id
-      name
+      nameId
       value
       createdAt
       updatedAt
@@ -24,7 +24,7 @@ export const onUpdateEntry = /* GraphQL */ `
   ) {
     onUpdateEntry(filter: $filter, owner: $owner) {
       id
-      name
+      nameId
       value
       createdAt
       updatedAt
@@ -39,8 +39,50 @@ export const onDeleteEntry = /* GraphQL */ `
   ) {
     onDeleteEntry(filter: $filter, owner: $owner) {
       id
-      name
+      nameId
       value
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onCreateEntryName = /* GraphQL */ `
+  subscription OnCreateEntryName(
+    $filter: ModelSubscriptionEntryNameFilterInput
+    $owner: String
+  ) {
+    onCreateEntryName(filter: $filter, owner: $owner) {
+      id
+      name
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onUpdateEntryName = /* GraphQL */ `
+  subscription OnUpdateEntryName(
+    $filter: ModelSubscriptionEntryNameFilterInput
+    $owner: String
+  ) {
+    onUpdateEntryName(filter: $filter, owner: $owner) {
+      id
+      name
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onDeleteEntryName = /* GraphQL */ `
+  subscription OnDeleteEntryName(
+    $filter: ModelSubscriptionEntryNameFilterInput
+    $owner: String
+  ) {
+    onDeleteEntryName(filter: $filter, owner: $owner) {
+      id
+      name
       createdAt
       updatedAt
       owner

@@ -1,5 +1,15 @@
-type Entry @model @auth(rules: [{allow: owner}]) {
+type Entry
+  # Adding timestamps explicitly allows us to filter on them
+  # https://stackoverflow.com/a/67419808
+  @model(timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" })
+  @auth(rules: [{ allow: owner }]) {
+  id: ID! @primaryKey(sortKeyFields: ["nameId"])
+  nameId: String!
+  value: Float
+  createdAt: AWSDateTime! @index(sortKeyFields: ["nameId"])
+}
+
+type EntryName @model @auth(rules: [{ allow: owner }]) {
   id: ID!
   name: String!
-  value: Float
-} 
+}
