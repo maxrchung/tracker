@@ -1,15 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Routing from "./Routing";
-import { Amplify } from "aws-amplify";
+import App from "./App";
 import "@cloudscape-design/global-styles/index.css";
+import { Amplify } from "aws-amplify";
 import { Authenticator } from "@aws-amplify/ui-react";
-
-// Not much luck with resolving this so suppressing
-// https://stackoverflow.com/a/71793890
-// eslint-disable-next-line import/no-unresolved
 import "@aws-amplify/ui-react/styles.css";
 
+// Allows this JS file to be imported without type definitions.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import awsExports from "./aws-exports";
@@ -22,7 +19,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Authenticator.Provider>
-      <Routing />
+      <App />
     </Authenticator.Provider>
   </React.StrictMode>
 );
