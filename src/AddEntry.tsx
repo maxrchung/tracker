@@ -8,9 +8,30 @@ import SpaceBetween from "@cloudscape-design/components/space-between";
 import Container from "@cloudscape-design/components/container";
 import { useState } from "react";
 import AttributeEditor from "@cloudscape-design/components/attribute-editor";
+import { useQuery } from "@tanstack/react-query";
+import { ListEntryNamesQuery } from "./API";
+import { API } from "aws-amplify";
+import { GraphQLQuery } from "@aws-amplify/api";
+import { listEntryNames } from "./graphql/queries";
+import Alert from "@cloudscape-design/components/alert";
+import ContentLayout from "@cloudscape-design/components/content-layout";
+import Link from "@cloudscape-design/components/link";
+import Spinner from "@cloudscape-design/components/spinner";
 
 export default function AddEntry() {
   const [inputValue, setInputValue] = useState("");
+
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ["listEntryNames"],
+    queryFn: async () => {
+      const allTodos = await API.graphql<GraphQLQuery<ListEntryNamesQuery>>({
+        query: listEntryNames,
+        authMode: "AMAZON_COGNITO_USER_POOLS",
+      });
+      console.log(allTodos);
+      return allTodos;
+    },
+  });
 
   const [selectedOption, setSelectedOption] = useState({
     label: "Option 1",
@@ -31,6 +52,29 @@ export default function AddEntry() {
     },
   ]);
 
+  const header = <Header variant="h1">Add entry</Header>;
+
+  if (isError) {
+    return (
+      <ContentLayout header={header}>
+        <Alert statusIconAriaLabel="Error" type="error" header="Error">
+          We couldn't load the page. This could be a temporary loading issue.{" "}
+          <Link href="/entries/create">Try refreshing the page.</Link>
+        </Alert>
+      </ContentLayout>
+    );
+  }
+
+  if (isLoading || !data) {
+    return (
+      <ContentLayout header={header}>
+        <Container>
+          <Spinner size="big" />
+        </Container>
+      </ContentLayout>
+    );
+  }
+
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       <Form
@@ -42,7 +86,7 @@ export default function AddEntry() {
             <Button variant="primary">Submit</Button>
           </SpaceBetween>
         }
-        header={<Header variant="h1">Add entry</Header>}
+        header={header}
       >
         <Container>
           <SpaceBetween size="l">
