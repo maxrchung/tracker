@@ -7,7 +7,6 @@ import Select from "@cloudscape-design/components/select";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import Container from "@cloudscape-design/components/container";
 import { useState } from "react";
-import AttributeEditor from "@cloudscape-design/components/attribute-editor";
 import { useQuery } from "@tanstack/react-query";
 import { ListEntryNamesQuery } from "./API";
 import { API } from "aws-amplify";
@@ -17,26 +16,55 @@ import Alert from "@cloudscape-design/components/alert";
 import ContentLayout from "@cloudscape-design/components/content-layout";
 import Link from "@cloudscape-design/components/link";
 import Spinner from "@cloudscape-design/components/spinner";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+interface SelectOption {
+  label: string;
+  value: string;
+}
 
 export default function AddEntry() {
-  const [inputValue, setInputValue] = useState("");
+  const [name, setName] = useState("");
+  const [value, setValue] = useState("");
 
   const { isLoading, isError, data } = useQuery({
     queryKey: ["listEntryNames"],
     queryFn: async () => {
-      const allTodos = await API.graphql<GraphQLQuery<ListEntryNamesQuery>>({
+      const query = await API.graphql<GraphQLQuery<ListEntryNamesQuery>>({
         query: listEntryNames,
         authMode: "AMAZON_COGNITO_USER_POOLS",
       });
-      console.log(allTodos);
-      return allTodos;
+      return (
+        // flatMap to handle null: https://stackoverflow.com/a/59726888
+        query.data?.listEntryNames?.items
+          ?.flatMap((item) => (item ? [item] : []))
+          .map((item) => item.name) ?? []
+      );
     },
   });
 
-  const [selectedOption, setSelectedOption] = useState({
-    label: "Option 1",
-    value: "1",
-    tags: ["OptionTag1", "Tag2", "Tag3"],
+  const schema = yup.object({
+    select: yup.object({
+      label: yup.string(),
+      value: yup.string(),
+    }),
+    name: yup
+      .string()
+      .max(100, "Entry has a maximum of 100 characters")
+      .when("select", {
+        is: (select: SelectOption | null) =>
+          select && select.label === "Create new entry...",
+        then: (schema) =>
+          schema.required().test(
+            "is-unique",
+            (label) =>
+              `${label} is already an entry. Select it from the Entry drop down.`,
+            (value) => data?.includes(value)
+          ),
+      }),
+    value: yup.number(),
   });
 
   const [items, setItems] = useState([
@@ -52,13 +80,17 @@ export default function AddEntry() {
     },
   ]);
 
+  const { handleSubmit, control } = useForm({
+    resolver: yupResolver(schema),
+  });
+
   const header = <Header variant="h1">Add entry</Header>;
 
   if (isError) {
     return (
       <ContentLayout header={header}>
         <Alert statusIconAriaLabel="Error" type="error" header="Error">
-          We couldn't load the page. This could be a temporary loading issue.{" "}
+          We couldn't load the page. Our service may be temporarily unavailable.{" "}
           <Link href="/entries/create">Try refreshing the page.</Link>
         </Alert>
       </ContentLayout>
@@ -91,79 +123,50 @@ export default function AddEntry() {
         <Container>
           <SpaceBetween size="l">
             <FormField label="Entry">
-              <Select
-                selectedOption={selectedOption}
-                // onChange={({ detail }) =>
-                //   setSelectedOption(detail.selectedOption)
-                // }
-                options={[
-                  {
-                    label: "Create new entry type...",
-                    value: "0",
-                  },
-                  {
-                    label: "Option 1",
-                    value: "1",
-                    tags: ["OptionTag1", "Tag2", "Tag3"],
-                  },
-                  {
-                    label: "Option 2",
-                    value: "2",
-                    tags: ["OptionTag1", "Tag2", "Tag3"],
-                  },
-                ]}
-                selectedAriaLabel="Selected"
+              <Controller
+                name="entry"
+                control={control}
+                render={({ field, fieldState, formState }) => (
+                  <Select
+                    {...field}
+                    selectedOption={field.value}
+                    options={[
+                      {
+                        label: "Create new entry...",
+                        value: "",
+                      },
+                      ...data.map((entryName) => ({
+                        label: entryName,
+                        value: entryName,
+                      })),
+                    ]}
+                    selectedAriaLabel="Selected"
+                  />
+                )}
               />
             </FormField>
             <FormField label="Entry name">
               <Input
-                value={inputValue}
-                onChange={(event) => setInputValue(event.detail.value)}
+                type="text"
+                inputMode="text"
+                value={name}
+                onChange={(event) => setName(event.detail.value)}
               />
             </FormField>
-            <AttributeEditor
-              onAddButtonClick={() =>
-                setItems([
-                  ...items,
-                  {
-                    key: "",
-                    value: "",
-                    type: { label: "Number", value: "number" },
-                  },
-                ])
+            <FormField
+              label={
+                <span>
+                  Value <i>- optional</i>
+                </span>
               }
-              onRemoveButtonClick={({ detail: { itemIndex } }) => {
-                const tmpItems = [...items];
-                tmpItems.splice(itemIndex, 1);
-                setItems(tmpItems);
-              }}
-              items={items}
-              addButtonText="Add new field"
-              definition={[
-                {
-                  label: "Entry field",
-                  control: (item) => <Input value={item.key} />,
-                },
-                {
-                  label: "Type",
-                  control: (item) => (
-                    <Select
-                      selectedOption={item.type}
-                      options={[
-                        { label: "Number", value: "number" },
-                        { label: "Text", value: "text" },
-                      ]}
-                    />
-                  ),
-                },
-                {
-                  label: "Value",
-                  control: (item) => <Input value={item.value} />,
-                },
-              ]}
-              removeButtonText="Remove"
-              empty="No items associated with the resource."
-            />
+            >
+              <Input
+                type="number"
+                inputMode="decimal"
+                value={value}
+                onChange={(event) => setValue(event.detail.value)}
+              />
+            </FormField>
           </SpaceBetween>
         </Container>
       </Form>
