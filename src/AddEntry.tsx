@@ -6,7 +6,6 @@ import Input from "@cloudscape-design/components/input";
 import Select from "@cloudscape-design/components/select";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import Container from "@cloudscape-design/components/container";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ListEntryNamesQuery } from "./API";
 import { API } from "aws-amplify";
@@ -26,9 +25,6 @@ interface SelectOption {
 }
 
 export default function AddEntry() {
-  const [name, setName] = useState("");
-  const [value, setValue] = useState("");
-
   const { isLoading, isError, data } = useQuery({
     queryKey: ["listEntryNames"],
     queryFn: async () => {
@@ -46,43 +42,39 @@ export default function AddEntry() {
   });
 
   const schema = yup.object({
-    select: yup.object({
-      label: yup.string(),
-      value: yup.string(),
-    }),
+    select: yup
+      .object({
+        label: yup.string(),
+        value: yup.string(),
+      })
+      .test(
+        "required",
+        "Entry is required",
+        (select) => select && !!select.label && !!select.value
+      ),
     name: yup
       .string()
-      .max(100, "Entry has a maximum of 100 characters")
+      .max(100, "Entry name has a maximum of 100 characters")
       .when("select", {
         is: (select: SelectOption | null) =>
           select && select.label === "Create new entry...",
         then: (schema) =>
-          schema.required().test(
-            "is-unique",
-            (label) =>
-              `${label} is already an entry. Select it from the Entry drop down.`,
-            (value) => data?.includes(value)
+          schema.required("Entry name is required").test(
+            "unique",
+            (name) =>
+              `${name} is already an entry. Select it from the Entry drop down.`,
+            (value) => !data?.includes(value)
           ),
       }),
     value: yup.number(),
   });
 
-  const [items, setItems] = useState([
-    {
-      key: "some-key-1",
-      value: "some-value-1",
-      type: { label: "Text", value: "text" },
-    },
-    {
-      key: "some-key-2",
-      value: "some-value-2",
-      type: { label: "Number", value: "number" },
-    },
-  ]);
+  type Entry = yup.InferType<typeof schema>;
 
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit, control, watch } = useForm<Entry>({
     resolver: yupResolver(schema),
   });
+  const select = watch("select");
 
   const header = <Header variant="h1">Add entry</Header>;
 
@@ -108,7 +100,11 @@ export default function AddEntry() {
   }
 
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
+    <form
+      onSubmit={handleSubmit((data) => {
+        console.log("data", data);
+      })}
+    >
       <Form
         actions={
           <SpaceBetween direction="horizontal" size="xs">
@@ -122,51 +118,85 @@ export default function AddEntry() {
       >
         <Container>
           <SpaceBetween size="l">
-            <FormField label="Entry">
+            <Controller
+              name="select"
+              control={control}
+              render={({ field, fieldState: { error } }) => {
+                const { onChange, value } = field;
+                return (
+                  <FormField label="Entry" errorText={error?.message}>
+                    <Select
+                      {...field}
+                      onChange={(event) =>
+                        onChange(event.detail.selectedOption)
+                      }
+                      selectedOption={value}
+                      options={[
+                        {
+                          label: "Create new entry...",
+                          value: "Create new entry...",
+                        },
+                        ...data.map((entryName) => ({
+                          label: entryName,
+                          value: entryName,
+                        })),
+                      ]}
+                      selectedAriaLabel="Selected"
+                    />
+                  </FormField>
+                );
+              }}
+            />
+
+            {select && (
               <Controller
-                name="entry"
+                name="name"
                 control={control}
-                render={({ field, fieldState, formState }) => (
-                  <Select
-                    {...field}
-                    selectedOption={field.value}
-                    options={[
-                      {
-                        label: "Create new entry...",
-                        value: "",
-                      },
-                      ...data.map((entryName) => ({
-                        label: entryName,
-                        value: entryName,
-                      })),
-                    ]}
-                    selectedAriaLabel="Selected"
-                  />
-                )}
+                render={({ field, fieldState: { error } }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <FormField
+                      label="New entry name"
+                      errorText={error?.message}
+                    >
+                      <Input
+                        {...field}
+                        value={value ?? ""}
+                        onChange={(event) => onChange(event.detail.value)}
+                        type="text"
+                        inputMode="text"
+                      />
+                    </FormField>
+                  );
+                }}
               />
-            </FormField>
-            <FormField label="Entry name">
-              <Input
-                type="text"
-                inputMode="text"
-                value={name}
-                onChange={(event) => setName(event.detail.value)}
-              />
-            </FormField>
-            <FormField
-              label={
-                <span>
-                  Value <i>- optional</i>
-                </span>
-              }
-            >
-              <Input
-                type="number"
-                inputMode="decimal"
-                value={value}
-                onChange={(event) => setValue(event.detail.value)}
-              />
-            </FormField>
+            )}
+
+            <Controller
+              name="value"
+              control={control}
+              render={({ field, fieldState: { error } }) => {
+                const { onChange, value } = field;
+                return (
+                  <FormField
+                    label={
+                      <span>
+                        Value <i>- optional</i>
+                      </span>
+                    }
+                    errorText={error?.message}
+                  >
+                    <Input
+                      {...field}
+                      value={value?.toString() ?? ""}
+                      onChange={(event) => onChange(event.detail.value)}
+                      type="number"
+                      inputMode="decimal"
+                    />
+                  </FormField>
+                );
+              }}
+            />
           </SpaceBetween>
         </Container>
       </Form>
