@@ -6,11 +6,18 @@ import Input from "@cloudscape-design/components/input";
 import Select from "@cloudscape-design/components/select";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import Container from "@cloudscape-design/components/container";
-import { useQuery } from "@tanstack/react-query";
-import { ListEntryNamesQuery } from "./API";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  CreateEntryInput,
+  CreateEntryMutation,
+  CreateEntryNameInput,
+  CreateEntryNameMutation,
+  ListEntryNamesQuery,
+} from "./API";
 import { API } from "aws-amplify";
 import { GraphQLQuery } from "@aws-amplify/api";
-import { listEntryNames } from "./graphql/queries";
+import * as queries from "./graphql/queries";
+import * as mutations from "./graphql/mutations";
 import Alert from "@cloudscape-design/components/alert";
 import ContentLayout from "@cloudscape-design/components/content-layout";
 import Link from "@cloudscape-design/components/link";
@@ -18,18 +25,23 @@ import Spinner from "@cloudscape-design/components/spinner";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
 
 interface SelectOption {
   label: string;
   value: string;
 }
 
+const createNewEntry = "Create new entry...";
+
 export default function AddEntry() {
-  const { isLoading, isError, data } = useQuery({
+  const navigate = useNavigate();
+
+  const listEntryNames = useQuery({
     queryKey: ["listEntryNames"],
     queryFn: async () => {
       const query = await API.graphql<GraphQLQuery<ListEntryNamesQuery>>({
-        query: listEntryNames,
+        query: queries.listEntryNames,
         authMode: "AMAZON_COGNITO_USER_POOLS",
       });
       return (
@@ -39,6 +51,44 @@ export default function AddEntry() {
           .map((item) => item.name) ?? []
       );
     },
+  });
+
+  const createEntry = useMutation({
+    mutationFn: async (entry: Entry) => {
+      const name =
+        (entry.select.label === createNewEntry
+          ? entry.name
+          : entry.select.label) ?? "";
+      const createEntryNameInput: CreateEntryNameInput = {
+        name,
+      };
+      const createEntryName = await API.graphql<
+        GraphQLQuery<CreateEntryNameMutation>
+      >({
+        query: mutations.createEntryName,
+        variables: createEntryNameInput,
+        authMode: "AMAZON_COGNITO_USER_POOLS",
+      });
+      const entryNameId = createEntryName.data?.createEntryName?.id;
+
+      if (!entryNameId) {
+        throw new Error("Entry name was not properly created.");
+      }
+
+      const createEntryInput: CreateEntryInput = {
+        nameId: entryNameId,
+        ...(entry.value && { value: entry.value }),
+      };
+      return await API.graphql<GraphQLQuery<CreateEntryMutation>>({
+        query: mutations.createEntryName,
+        variables: createEntryInput,
+        authMode: "AMAZON_COGNITO_USER_POOLS",
+      });
+    },
+    onSuccess: () => {
+      navigate("/entries");
+    },
+    onError: () => {},
   });
 
   const schema = yup.object({
@@ -57,13 +107,13 @@ export default function AddEntry() {
       .max(100, "Entry name has a maximum of 100 characters")
       .when("select", {
         is: (select: SelectOption | null) =>
-          select && select.label === "Create new entry...",
+          select && select.value === createNewEntry,
         then: (schema) =>
           schema.required("Entry name is required").test(
             "unique",
             (name) =>
               `${name} is already an entry. Select it from the Entry drop down.`,
-            (value) => !data?.includes(value)
+            (value) => !listEntryNames.data?.includes(value)
           ),
       }),
     value: yup.number(),
@@ -78,7 +128,7 @@ export default function AddEntry() {
 
   const header = <Header variant="h1">Add entry</Header>;
 
-  if (isError) {
+  if (listEntryNames.isError) {
     return (
       <ContentLayout header={header}>
         <Alert statusIconAriaLabel="Error" type="error" header="Error">
@@ -89,7 +139,7 @@ export default function AddEntry() {
     );
   }
 
-  if (isLoading || !data) {
+  if (listEntryNames.isLoading || !listEntryNames.data) {
     return (
       <ContentLayout header={header}>
         <Container>
@@ -100,11 +150,7 @@ export default function AddEntry() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit((data) => {
-        console.log("data", data);
-      })}
-    >
+    <form onSubmit={handleSubmit((data) => createEntry.mutate(data))}>
       <Form
         actions={
           <SpaceBetween direction="horizontal" size="xs">
@@ -133,10 +179,10 @@ export default function AddEntry() {
                       selectedOption={value}
                       options={[
                         {
-                          label: "Create new entry...",
-                          value: "Create new entry...",
+                          label: createNewEntry,
+                          value: createNewEntry,
                         },
-                        ...data.map((entryName) => ({
+                        ...listEntryNames.data.map((entryName) => ({
                           label: entryName,
                           value: entryName,
                         })),
