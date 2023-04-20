@@ -16,8 +16,9 @@ import {
 } from "./API";
 import { API } from "aws-amplify";
 import { GraphQLQuery } from "@aws-amplify/api";
-import * as queries from "./graphql/queries";
-import * as mutations from "./graphql/mutations";
+import type { GraphQLResult } from "@aws-amplify/api";
+import * as queries from "../graphql/queries";
+import * as mutations from "../graphql/mutations";
 import Alert from "@cloudscape-design/components/alert";
 import ContentLayout from "@cloudscape-design/components/content-layout";
 import Link from "@cloudscape-design/components/link";
@@ -26,6 +27,8 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
+import { useNotificationStore } from "../store";
+import { getErrorMessage } from "../error-utils";
 
 interface SelectOption {
   label: string;
@@ -36,6 +39,9 @@ const createNewEntry = "Create new entry...";
 
 export default function AddEntry() {
   const navigate = useNavigate();
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification
+  );
 
   const listEntryNames = useQuery({
     queryKey: ["listEntryNames"],
@@ -46,33 +52,41 @@ export default function AddEntry() {
       });
       return (
         // flatMap to handle null: https://stackoverflow.com/a/59726888
-        query.data?.listEntryNames?.items
-          ?.flatMap((item) => (item ? [item] : []))
-          .map((item) => item.name) ?? []
+        query.data?.listEntryNames?.items?.flatMap((item) =>
+          item ? [item] : []
+        ) ?? []
       );
     },
   });
 
   const createEntry = useMutation({
     mutationFn: async (entry: Entry) => {
-      const name =
-        (entry.select.label === createNewEntry
-          ? entry.name
-          : entry.select.label) ?? "";
-      const createEntryNameInput: CreateEntryNameInput = {
-        name,
-      };
-      const createEntryName = await API.graphql<
-        GraphQLQuery<CreateEntryNameMutation>
-      >({
-        query: mutations.createEntryName,
-        variables: createEntryNameInput,
-        authMode: "AMAZON_COGNITO_USER_POOLS",
-      });
-      const entryNameId = createEntryName.data?.createEntryName?.id;
+      let entryNameId = entry.select.value;
+
+      // Create entry name if new
+      if (entryNameId === createNewEntry) {
+        const name =
+          (entry.select.label === createNewEntry
+            ? entry.name
+            : entry.select.label) ?? "";
+        const createEntryNameInput: CreateEntryNameInput = {
+          name,
+        };
+
+        const createEntryName = await API.graphql<
+          GraphQLQuery<CreateEntryNameMutation>
+        >({
+          query: mutations.createEntryName,
+          variables: {
+            input: createEntryNameInput,
+          },
+          authMode: "AMAZON_COGNITO_USER_POOLS",
+        });
+        entryNameId = createEntryName.data?.createEntryName?.id;
+      }
 
       if (!entryNameId) {
-        throw new Error("Entry name was not properly created.");
+        throw new Error("Entry failed to be created. Try submitting again.");
       }
 
       const createEntryInput: CreateEntryInput = {
@@ -80,15 +94,31 @@ export default function AddEntry() {
         ...(entry.value && { value: entry.value }),
       };
       return await API.graphql<GraphQLQuery<CreateEntryMutation>>({
-        query: mutations.createEntryName,
-        variables: createEntryInput,
+        query: mutations.createEntry,
+        variables: {
+          input: createEntryInput,
+        },
         authMode: "AMAZON_COGNITO_USER_POOLS",
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, { name }) => {
       navigate("/entries");
+      addNotification({
+        type: "success",
+        content: (
+          <>
+            Successfully added entry <b>{name}</b>.
+          </>
+        ),
+      });
     },
-    onError: () => {},
+    onError: (error: Error | GraphQLResult) => {
+      const message = getErrorMessage(error);
+      addNotification({
+        type: "error",
+        content: `Failed to add entry. ${message}`,
+      });
+    },
   });
 
   const schema = yup.object({
@@ -109,12 +139,22 @@ export default function AddEntry() {
         is: (select: SelectOption | null) =>
           select && select.value === createNewEntry,
         then: (schema) =>
-          schema.required("Entry name is required").test(
-            "unique",
-            (name) =>
-              `${name} is already an entry. Select it from the Entry drop down.`,
-            (value) => !listEntryNames.data?.includes(value)
-          ),
+          schema
+            .required("Entry name is required")
+            .test(
+              "max",
+              () =>
+                "Entry can't be added. Only 10 different entry types are allowed.",
+              () => listEntryNames.data && listEntryNames.data?.length <= 10
+            )
+            .test(
+              "unique",
+              ({ value }) => {
+                return `${value} is already an entry. Select it from the Entry drop down.`;
+              },
+              (value) =>
+                !listEntryNames.data?.some((item) => item.name === value)
+            ),
       }),
     value: yup.number(),
   });
@@ -182,10 +222,10 @@ export default function AddEntry() {
                           label: createNewEntry,
                           value: createNewEntry,
                         },
-                        ...listEntryNames.data.map((entryName) => ({
-                          label: entryName,
-                          value: entryName,
-                        })),
+                        ...(listEntryNames.data?.map((item) => ({
+                          label: item.name,
+                          value: item.id,
+                        })) ?? []),
                       ]}
                       selectedAriaLabel="Selected"
                     />
@@ -194,7 +234,7 @@ export default function AddEntry() {
               }}
             />
 
-            {select && (
+            {select?.label === createNewEntry && (
               <Controller
                 name="name"
                 control={control}

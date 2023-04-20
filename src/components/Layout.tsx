@@ -1,11 +1,22 @@
 import AppLayout from "@cloudscape-design/components/app-layout";
 import TopNavigation from "@cloudscape-design/components/top-navigation";
-import { useAuthenticator } from "@aws-amplify/ui-react";
+import { Button, useAuthenticator } from "@aws-amplify/ui-react";
 import { Outlet, useLocation, useMatches } from "react-router-dom";
 import SideNavigation from "@cloudscape-design/components/side-navigation";
 import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
+import Flashbar, {
+  FlashbarProps,
+} from "@cloudscape-design/components/flashbar";
+import { useNotificationStore } from "../store";
 
 export default function Layout() {
+  const messageDefinitions = useNotificationStore(
+    (state) => state.messageDefinitions
+  );
+  const removeNotification = useNotificationStore(
+    (state) => state.removeNotification
+  );
+
   const { signOut, user } = useAuthenticator();
   const location = useLocation();
 
@@ -72,6 +83,26 @@ export default function Layout() {
             ]}
           />
         }
+        notifications={
+          <Flashbar
+            i18nStrings={{
+              ariaLabel: "Notifications",
+              notificationBarAriaLabel: "View all notifications",
+              notificationBarText: "Notifications",
+              errorIconAriaLabel: "Error",
+              warningIconAriaLabel: "Warning",
+              successIconAriaLabel: "Success",
+              infoIconAriaLabel: "Info",
+              inProgressIconAriaLabel: "In progress",
+            }}
+            items={messageDefinitions.map((definition) => ({
+              ...definition,
+              onDismiss: () => removeNotification(definition.id ?? ""),
+            }))}
+            stackItems
+          />
+        }
+        stickyNotifications
         content={<Outlet />}
       />
     </>

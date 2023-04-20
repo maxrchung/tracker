@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
 import "@cloudscape-design/global-styles/index.css";
 import { Amplify } from "aws-amplify";
 import { Authenticator } from "@aws-amplify/ui-react";
@@ -10,6 +9,7 @@ import "@aws-amplify/ui-react/styles.css";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import awsExports from "./aws-exports";
+import App from "./components/App";
 Amplify.configure(awsExports);
 
 const root = ReactDOM.createRoot(
