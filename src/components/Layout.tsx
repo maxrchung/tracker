@@ -1,18 +1,17 @@
 import AppLayout from "@cloudscape-design/components/app-layout";
 import TopNavigation from "@cloudscape-design/components/top-navigation";
-import { Button, useAuthenticator } from "@aws-amplify/ui-react";
+import { useAuthenticator } from "@aws-amplify/ui-react";
 import { Outlet, useLocation, useMatches } from "react-router-dom";
 import SideNavigation from "@cloudscape-design/components/side-navigation";
 import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
-import Flashbar, {
-  FlashbarProps,
-} from "@cloudscape-design/components/flashbar";
-import { useNotificationStore } from "../store";
+import Flashbar from "@cloudscape-design/components/flashbar";
+import { useNotificationStore } from "../stores/notification-store";
 
 export default function Layout() {
   const messageDefinitions = useNotificationStore(
     (state) => state.messageDefinitions
   );
+  console.log("messageDefinitions", messageDefinitions);
   const removeNotification = useNotificationStore(
     (state) => state.removeNotification
   );

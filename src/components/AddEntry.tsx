@@ -27,7 +27,7 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
-import { useNotificationStore } from "../store";
+import { useNotificationStore } from "../stores/notification-store";
 import { getErrorMessage } from "../error-utils";
 
 interface SelectOption {
@@ -101,22 +101,18 @@ export default function AddEntry() {
         authMode: "AMAZON_COGNITO_USER_POOLS",
       });
     },
-    onSuccess: (_data, { name }) => {
+    onSuccess: (_data, { select, name }) => {
+      const entryName = select.label === createNewEntry ? name : select.label;
       navigate("/entries");
       addNotification({
         type: "success",
-        content: (
-          <>
-            Successfully added entry <b>{name}</b>.
-          </>
-        ),
+        content: `Successfully added ${entryName}.`,
       });
     },
     onError: (error: Error | GraphQLResult) => {
-      const message = getErrorMessage(error);
       addNotification({
         type: "error",
-        content: `Failed to add entry. ${message}`,
+        content: `Failed to add entry. ${getErrorMessage(error)}`,
       });
     },
   });

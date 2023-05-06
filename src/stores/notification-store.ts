@@ -5,8 +5,8 @@ import { uid } from "uid";
 
 // Notification is a subset of FlashbarProps.MessageDefinition
 interface Notification {
-  header?: React.ReactNode;
-  content?: React.ReactNode;
+  header?: string;
+  content?: string;
   type: FlashbarProps.Type;
 }
 
