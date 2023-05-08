@@ -4,124 +4,90 @@ import Box from "@cloudscape-design/components/box";
 import Button from "@cloudscape-design/components/button";
 import Header from "@cloudscape-design/components/header";
 import Pagination from "@cloudscape-design/components/pagination";
-import CollectionPreferences from "@cloudscape-design/components/collection-preferences";
 import SpaceBetween from "@cloudscape-design/components/space-between";
+import { API } from "aws-amplify";
+import {
+  EntriesByCreatedAtAndNameIdQuery,
+  Entry,
+  EntryName,
+  ListEntriesQuery,
+  ListEntryNamesQuery,
+} from "./API";
+import * as queries from "../graphql/queries";
+import { GraphQLQuery } from "@aws-amplify/api";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import format from "date-fns/format";
 
 export default function Entries() {
-  const [selectedItems, setSelectedItems] = React.useState([
-    {
-      name: "Item 2",
-      alt: "Second",
-      description: "This is the second item",
-      type: "1B",
-      size: "Large",
+  const [selectedItems, setSelectedItems] = React.useState<Entry[]>([]);
+
+  const listEntryNames = useQuery({
+    queryKey: ["listEntryNames"],
+    queryFn: async () => {
+      const query = await API.graphql<GraphQLQuery<ListEntryNamesQuery>>({
+        query: queries.listEntryNames,
+        authMode: "AMAZON_COGNITO_USER_POOLS",
+      });
+      // flatMap to handle null: https://stackoverflow.com/a/59726888
+      const items: EntryName[] =
+        query.data?.listEntryNames?.items?.flatMap((item) =>
+          item ? [item] : []
+        ) ?? [];
+      // Return map so that we can quickly look up
+      const map = items.reduce<Record<string, EntryName>>((map, curr) => {
+        map[curr.id] = curr;
+        return map;
+      }, {});
+      return map;
     },
-  ]);
+  });
+
+  const [page, setPage] = useState<number>(0);
+  const [lastPage, setLastPage] = useState<number>();
+  // null means that there are no more results
+  const [nextToken, setNextToken] = useState<string | null>();
+  const listEntries = useQuery({
+    queryKey: ["listEntries", page],
+    queryFn: async () => {
+      const query = await API.graphql<
+        GraphQLQuery<EntriesByCreatedAtAndNameIdQuery>
+      >({
+        query: queries.entriesByCreatedAtAndNameId,
+        authMode: "AMAZON_COGNITO_USER_POOLS",
+      });
+
+      // I think this nextToken management works because react-query will cache pages
+      const nextToken = query.data?.entriesByCreatedAtAndNameId?.nextToken;
+      setNextToken(nextToken);
+      if (nextToken === null) {
+        setLastPage(page);
+      }
+
+      // flatMap to handle null: https://stackoverflow.com/a/59726888
+      const items: Entry[] =
+        query.data?.entriesByCreatedAtAndNameId?.items?.flatMap((item) =>
+          item ? [item] : []
+        ) ?? [];
+      return items;
+    },
+  });
 
   return (
     <Table
       variant="full-page"
       resizableColumns
       stickyHeader
-      onSelectionChange={({ detail }) => setSelectedItems(detail.selectedItems)}
-      selectedItems={selectedItems}
-      ariaLabels={{
-        selectionGroupLabel: "Items selection",
-        allItemsSelectionLabel: ({ selectedItems }) =>
-          `${selectedItems.length} ${
-            selectedItems.length === 1 ? "item" : "items"
-          } selected`,
-        itemSelectionLabel: ({ selectedItems }, item) => {
-          const isItemSelected = selectedItems.filter(
-            (i) => i.name === item.name
-          ).length;
-          return `${item.name} is ${isItemSelected ? "" : "not"} selected`;
-        },
-      }}
-      columnDefinitions={[
-        {
-          id: "variable",
-          header: "Variable name",
-          cell: (e) => e.name,
-          sortingField: "name",
-        },
-        {
-          id: "value",
-          header: "Text value",
-          cell: (e) => e.alt,
-          sortingField: "alt",
-        },
-        { id: "type", header: "Type", cell: (e) => e.type },
-        {
-          id: "description",
-          header: "Description",
-          cell: (e) => e.description,
-        },
-      ]}
-      items={[
-        {
-          name: "Item 1",
-          alt: "First",
-          description: "This is the first item",
-          type: "1A",
-          size: "Small",
-        },
-        {
-          name: "Item 2",
-          alt: "Second",
-          description: "This is the second item",
-          type: "1B",
-          size: "Large",
-        },
-        {
-          name: "Item 3",
-          alt: "Third",
-          description: "-",
-          type: "1A",
-          size: "Large",
-        },
-        {
-          name: "Item 4",
-          alt: "Fourth",
-          description: "This is the fourth item",
-          type: "2A",
-          size: "Small",
-        },
-        {
-          name: "Item 5",
-          alt: "-",
-          description: "This is the fifth item with a longer description",
-          type: "2A",
-          size: "Large",
-        },
-        {
-          name: "Item 6",
-          alt: "Sixth",
-          description: "This is the sixth item",
-          type: "1A",
-          size: "Small",
-        },
-      ]}
-      loadingText="Loading resources"
       selectionType="single"
-      trackBy="name"
-      visibleColumns={["variable", "value", "type", "description"]}
-      empty={
-        <Box textAlign="center" color="inherit">
-          <b>No entries</b>
-          <Box padding={{ bottom: "s" }} variant="p" color="inherit">
-            No entries to display.
-          </Box>
-          <Button>Add entry</Button>
-        </Box>
-      }
+      selectedItems={selectedItems ? selectedItems : []}
+      onSelectionChange={({ detail }) => setSelectedItems(detail.selectedItems)}
       header={
         <Header
           variant="h1"
           actions={
             <SpaceBetween direction="horizontal" size="xs">
-              <Button>Edit</Button>
-              <Button>Delete</Button>
+              <Button disabled={!!selectedItems}>Delete</Button>
+              <Button disabled={!!selectedItems}>Edit</Button>
               <Button variant="primary" href="/entries/create">
                 Add entry
               </Button>
@@ -131,55 +97,47 @@ export default function Entries() {
           Entries
         </Header>
       }
-      pagination={
-        <Pagination
-          currentPageIndex={1}
-          pagesCount={2}
-          ariaLabels={{
-            nextPageLabel: "Next page",
-            previousPageLabel: "Previous page",
-            pageLabel: (pageNumber) => `Page ${pageNumber} of all pages`,
-          }}
-        />
+      columnDefinitions={[
+        {
+          id: "name",
+          header: "Name",
+          cell: (e) => listEntryNames.data?.[e.nameId]?.name ?? "",
+        },
+        {
+          id: "value",
+          header: "Value",
+          cell: (e) => e.value,
+        },
+        {
+          id: "date",
+          header: `Date ${format(Date.now(), "(zzzz)")}`,
+          cell: (e) => format(new Date(e.createdAt), "yyyy-MM-dd hh:mm aa"),
+        },
+      ]}
+      items={listEntries.data ?? []}
+      trackBy="id"
+      loading={false}
+      loadingText="Loading entries..."
+      empty={
+        <Box textAlign="center" color="inherit">
+          <Box padding={{ bottom: "s" }} variant="p" color="inherit">
+            No entries to display.
+          </Box>
+          <Button>Add entry</Button>
+        </Box>
       }
-      preferences={
-        <CollectionPreferences
-          title="Preferences"
-          confirmLabel="Confirm"
-          cancelLabel="Cancel"
-          preferences={{
-            pageSize: 10,
-            visibleContent: ["variable", "value", "type", "description"],
-          }}
-          pageSizePreference={{
-            title: "Select page size",
-            options: [
-              { value: 10, label: "10 resources" },
-              { value: 20, label: "20 resources" },
-            ],
-          }}
-          visibleContentPreference={{
-            title: "Select visible content",
-            options: [
-              {
-                label: "Main distribution properties",
-                options: [
-                  {
-                    id: "variable",
-                    label: "Variable name",
-                    editable: false,
-                  },
-                  { id: "value", label: "Text value" },
-                  { id: "type", label: "Type" },
-                  {
-                    id: "description",
-                    label: "Description",
-                  },
-                ],
-              },
-            ],
-          }}
-        />
+      pagination={
+        listEntries?.data &&
+        listEntries.data.length > 0 && (
+          <Pagination
+            currentPageIndex={page + 1} // 0 index to 1 index
+            pagesCount={lastPage ?? Infinity}
+            openEnd={nextToken !== null}
+            onNextPageClick={() => {
+              console.log("Next page");
+            }}
+          />
+        )
       }
     />
   );

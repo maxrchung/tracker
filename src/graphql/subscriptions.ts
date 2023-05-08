@@ -8,10 +8,11 @@ export const onCreateEntry = /* GraphQL */ `
     $owner: String
   ) {
     onCreateEntry(filter: $filter, owner: $owner) {
-      id
       nameId
       value
+      sortByDate
       createdAt
+      id
       updatedAt
       owner
     }
@@ -23,10 +24,11 @@ export const onUpdateEntry = /* GraphQL */ `
     $owner: String
   ) {
     onUpdateEntry(filter: $filter, owner: $owner) {
-      id
       nameId
       value
+      sortByDate
       createdAt
+      id
       updatedAt
       owner
     }
@@ -38,10 +40,11 @@ export const onDeleteEntry = /* GraphQL */ `
     $owner: String
   ) {
     onDeleteEntry(filter: $filter, owner: $owner) {
-      id
       nameId
       value
+      sortByDate
       createdAt
+      id
       updatedAt
       owner
     }

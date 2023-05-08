@@ -3,45 +3,22 @@
 //  This file was automatically generated and should not be edited.
 
 export type CreateEntryInput = {
-  id?: string | null,
   nameId: string,
   value?: number | null,
+  sortByDate: string,
   createdAt?: string | null,
+  id?: string | null,
 };
 
 export type ModelEntryConditionInput = {
+  nameId?: ModelStringInput | null,
   value?: ModelFloatInput | null,
+  sortByDate?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
   and?: Array< ModelEntryConditionInput | null > | null,
   or?: Array< ModelEntryConditionInput | null > | null,
   not?: ModelEntryConditionInput | null,
 };
-
-export type ModelFloatInput = {
-  ne?: number | null,
-  eq?: number | null,
-  le?: number | null,
-  lt?: number | null,
-  ge?: number | null,
-  gt?: number | null,
-  between?: Array< number | null > | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-};
-
-export enum ModelAttributeTypes {
-  binary = "binary",
-  binarySet = "binarySet",
-  bool = "bool",
-  list = "list",
-  map = "map",
-  number = "number",
-  numberSet = "numberSet",
-  string = "string",
-  stringSet = "stringSet",
-  _null = "_null",
-}
-
 
 export type ModelStringInput = {
   ne?: string | null,
@@ -59,6 +36,20 @@ export type ModelStringInput = {
   size?: ModelSizeInput | null,
 };
 
+export enum ModelAttributeTypes {
+  binary = "binary",
+  binarySet = "binarySet",
+  bool = "bool",
+  list = "list",
+  map = "map",
+  number = "number",
+  numberSet = "numberSet",
+  string = "string",
+  stringSet = "stringSet",
+  _null = "_null",
+}
+
+
 export type ModelSizeInput = {
   ne?: number | null,
   eq?: number | null,
@@ -69,26 +60,39 @@ export type ModelSizeInput = {
   between?: Array< number | null > | null,
 };
 
+export type ModelFloatInput = {
+  ne?: number | null,
+  eq?: number | null,
+  le?: number | null,
+  lt?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  between?: Array< number | null > | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+};
+
 export type Entry = {
   __typename: "Entry",
-  id: string,
   nameId: string,
   value?: number | null,
+  sortByDate: string,
   createdAt: string,
+  id: string,
   updatedAt: string,
   owner?: string | null,
 };
 
 export type UpdateEntryInput = {
-  id: string,
-  nameId: string,
+  nameId?: string | null,
   value?: number | null,
+  sortByDate?: string | null,
   createdAt?: string | null,
+  id: string,
 };
 
 export type DeleteEntryInput = {
   id: string,
-  nameId: string,
 };
 
 export type CreateEntryNameInput = {
@@ -121,6 +125,22 @@ export type DeleteEntryNameInput = {
   id: string,
 };
 
+export type ModelEntryFilterInput = {
+  nameId?: ModelStringInput | null,
+  value?: ModelFloatInput | null,
+  sortByDate?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  and?: Array< ModelEntryFilterInput | null > | null,
+  or?: Array< ModelEntryFilterInput | null > | null,
+  not?: ModelEntryFilterInput | null,
+};
+
+export type ModelEntryConnection = {
+  __typename: "ModelEntryConnection",
+  items:  Array<Entry | null >,
+  nextToken?: string | null,
+};
+
 export type ModelStringKeyConditionInput = {
   eq?: string | null,
   le?: string | null,
@@ -131,14 +151,18 @@ export type ModelStringKeyConditionInput = {
   beginsWith?: string | null,
 };
 
-export type ModelEntryFilterInput = {
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
+
+export type ModelEntryNameFilterInput = {
   id?: ModelIDInput | null,
-  nameId?: ModelStringInput | null,
-  value?: ModelFloatInput | null,
-  createdAt?: ModelStringInput | null,
-  and?: Array< ModelEntryFilterInput | null > | null,
-  or?: Array< ModelEntryFilterInput | null > | null,
-  not?: ModelEntryFilterInput | null,
+  name?: ModelStringInput | null,
+  and?: Array< ModelEntryNameFilterInput | null > | null,
+  or?: Array< ModelEntryNameFilterInput | null > | null,
+  not?: ModelEntryNameFilterInput | null,
 };
 
 export type ModelIDInput = {
@@ -157,26 +181,6 @@ export type ModelIDInput = {
   size?: ModelSizeInput | null,
 };
 
-export enum ModelSortDirection {
-  ASC = "ASC",
-  DESC = "DESC",
-}
-
-
-export type ModelEntryConnection = {
-  __typename: "ModelEntryConnection",
-  items:  Array<Entry | null >,
-  nextToken?: string | null,
-};
-
-export type ModelEntryNameFilterInput = {
-  id?: ModelIDInput | null,
-  name?: ModelStringInput | null,
-  and?: Array< ModelEntryNameFilterInput | null > | null,
-  or?: Array< ModelEntryNameFilterInput | null > | null,
-  not?: ModelEntryNameFilterInput | null,
-};
-
 export type ModelEntryNameConnection = {
   __typename: "ModelEntryNameConnection",
   items:  Array<EntryName | null >,
@@ -184,27 +188,12 @@ export type ModelEntryNameConnection = {
 };
 
 export type ModelSubscriptionEntryFilterInput = {
-  id?: ModelSubscriptionIDInput | null,
   nameId?: ModelSubscriptionStringInput | null,
   value?: ModelSubscriptionFloatInput | null,
+  sortByDate?: ModelSubscriptionStringInput | null,
   createdAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionEntryFilterInput | null > | null,
   or?: Array< ModelSubscriptionEntryFilterInput | null > | null,
-};
-
-export type ModelSubscriptionIDInput = {
-  ne?: string | null,
-  eq?: string | null,
-  le?: string | null,
-  lt?: string | null,
-  ge?: string | null,
-  gt?: string | null,
-  contains?: string | null,
-  notContains?: string | null,
-  between?: Array< string | null > | null,
-  beginsWith?: string | null,
-  in?: Array< string | null > | null,
-  notIn?: Array< string | null > | null,
 };
 
 export type ModelSubscriptionStringInput = {
@@ -241,6 +230,21 @@ export type ModelSubscriptionEntryNameFilterInput = {
   or?: Array< ModelSubscriptionEntryNameFilterInput | null > | null,
 };
 
+export type ModelSubscriptionIDInput = {
+  ne?: string | null,
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  contains?: string | null,
+  notContains?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+  in?: Array< string | null > | null,
+  notIn?: Array< string | null > | null,
+};
+
 export type CreateEntryMutationVariables = {
   input: CreateEntryInput,
   condition?: ModelEntryConditionInput | null,
@@ -249,10 +253,11 @@ export type CreateEntryMutationVariables = {
 export type CreateEntryMutation = {
   createEntry?:  {
     __typename: "Entry",
-    id: string,
     nameId: string,
     value?: number | null,
+    sortByDate: string,
     createdAt: string,
+    id: string,
     updatedAt: string,
     owner?: string | null,
   } | null,
@@ -266,10 +271,11 @@ export type UpdateEntryMutationVariables = {
 export type UpdateEntryMutation = {
   updateEntry?:  {
     __typename: "Entry",
-    id: string,
     nameId: string,
     value?: number | null,
+    sortByDate: string,
     createdAt: string,
+    id: string,
     updatedAt: string,
     owner?: string | null,
   } | null,
@@ -283,10 +289,11 @@ export type DeleteEntryMutationVariables = {
 export type DeleteEntryMutation = {
   deleteEntry?:  {
     __typename: "Entry",
-    id: string,
     nameId: string,
     value?: number | null,
+    sortByDate: string,
     createdAt: string,
+    id: string,
     updatedAt: string,
     owner?: string | null,
   } | null,
@@ -342,28 +349,25 @@ export type DeleteEntryNameMutation = {
 
 export type GetEntryQueryVariables = {
   id: string,
-  nameId: string,
 };
 
 export type GetEntryQuery = {
   getEntry?:  {
     __typename: "Entry",
-    id: string,
     nameId: string,
     value?: number | null,
+    sortByDate: string,
     createdAt: string,
+    id: string,
     updatedAt: string,
     owner?: string | null,
   } | null,
 };
 
 export type ListEntriesQueryVariables = {
-  id?: string | null,
-  nameId?: ModelStringKeyConditionInput | null,
   filter?: ModelEntryFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
-  sortDirection?: ModelSortDirection | null,
 };
 
 export type ListEntriesQuery = {
@@ -371,10 +375,11 @@ export type ListEntriesQuery = {
     __typename: "ModelEntryConnection",
     items:  Array< {
       __typename: "Entry",
-      id: string,
       nameId: string,
       value?: number | null,
+      sortByDate: string,
       createdAt: string,
+      id: string,
       updatedAt: string,
       owner?: string | null,
     } | null >,
@@ -382,24 +387,51 @@ export type ListEntriesQuery = {
   } | null,
 };
 
-export type EntriesByCreatedAtAndNameIdQueryVariables = {
-  createdAt: string,
-  nameId?: ModelStringKeyConditionInput | null,
+export type EntriesByNameIdAndCreatedAtQueryVariables = {
+  nameId: string,
+  createdAt?: ModelStringKeyConditionInput | null,
   sortDirection?: ModelSortDirection | null,
   filter?: ModelEntryFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
 };
 
-export type EntriesByCreatedAtAndNameIdQuery = {
-  entriesByCreatedAtAndNameId?:  {
+export type EntriesByNameIdAndCreatedAtQuery = {
+  entriesByNameIdAndCreatedAt?:  {
     __typename: "ModelEntryConnection",
     items:  Array< {
       __typename: "Entry",
-      id: string,
       nameId: string,
       value?: number | null,
+      sortByDate: string,
       createdAt: string,
+      id: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type EntriesBySortByDateAndCreatedAtQueryVariables = {
+  sortByDate: string,
+  createdAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelEntryFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type EntriesBySortByDateAndCreatedAtQuery = {
+  entriesBySortByDateAndCreatedAt?:  {
+    __typename: "ModelEntryConnection",
+    items:  Array< {
+      __typename: "Entry",
+      nameId: string,
+      value?: number | null,
+      sortByDate: string,
+      createdAt: string,
+      id: string,
       updatedAt: string,
       owner?: string | null,
     } | null >,
@@ -451,10 +483,11 @@ export type OnCreateEntrySubscriptionVariables = {
 export type OnCreateEntrySubscription = {
   onCreateEntry?:  {
     __typename: "Entry",
-    id: string,
     nameId: string,
     value?: number | null,
+    sortByDate: string,
     createdAt: string,
+    id: string,
     updatedAt: string,
     owner?: string | null,
   } | null,
@@ -468,10 +501,11 @@ export type OnUpdateEntrySubscriptionVariables = {
 export type OnUpdateEntrySubscription = {
   onUpdateEntry?:  {
     __typename: "Entry",
-    id: string,
     nameId: string,
     value?: number | null,
+    sortByDate: string,
     createdAt: string,
+    id: string,
     updatedAt: string,
     owner?: string | null,
   } | null,
@@ -485,10 +519,11 @@ export type OnDeleteEntrySubscriptionVariables = {
 export type OnDeleteEntrySubscription = {
   onDeleteEntry?:  {
     __typename: "Entry",
-    id: string,
     nameId: string,
     value?: number | null,
+    sortByDate: string,
     createdAt: string,
+    id: string,
     updatedAt: string,
     owner?: string | null,
   } | null,

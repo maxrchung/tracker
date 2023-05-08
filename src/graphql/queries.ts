@@ -3,12 +3,13 @@
 // this is an auto generated file. This will be overwritten
 
 export const getEntry = /* GraphQL */ `
-  query GetEntry($id: ID!, $nameId: String!) {
-    getEntry(id: $id, nameId: $nameId) {
-      id
+  query GetEntry($id: ID!) {
+    getEntry(id: $id) {
       nameId
       value
+      sortByDate
       createdAt
+      id
       updatedAt
       owner
     }
@@ -16,26 +17,17 @@ export const getEntry = /* GraphQL */ `
 `;
 export const listEntries = /* GraphQL */ `
   query ListEntries(
-    $id: ID
-    $nameId: ModelStringKeyConditionInput
     $filter: ModelEntryFilterInput
     $limit: Int
     $nextToken: String
-    $sortDirection: ModelSortDirection
   ) {
-    listEntries(
-      id: $id
-      nameId: $nameId
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-      sortDirection: $sortDirection
-    ) {
+    listEntries(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
-        id
         nameId
         value
+        sortByDate
         createdAt
+        id
         updatedAt
         owner
       }
@@ -43,28 +35,59 @@ export const listEntries = /* GraphQL */ `
     }
   }
 `;
-export const entriesByCreatedAtAndNameId = /* GraphQL */ `
-  query EntriesByCreatedAtAndNameId(
-    $createdAt: AWSDateTime!
-    $nameId: ModelStringKeyConditionInput
+export const entriesByNameIdAndCreatedAt = /* GraphQL */ `
+  query EntriesByNameIdAndCreatedAt(
+    $nameId: String!
+    $createdAt: ModelStringKeyConditionInput
     $sortDirection: ModelSortDirection
     $filter: ModelEntryFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    entriesByCreatedAtAndNameId(
-      createdAt: $createdAt
+    entriesByNameIdAndCreatedAt(
       nameId: $nameId
+      createdAt: $createdAt
       sortDirection: $sortDirection
       filter: $filter
       limit: $limit
       nextToken: $nextToken
     ) {
       items {
-        id
         nameId
         value
+        sortByDate
         createdAt
+        id
+        updatedAt
+        owner
+      }
+      nextToken
+    }
+  }
+`;
+export const entriesBySortByDateAndCreatedAt = /* GraphQL */ `
+  query EntriesBySortByDateAndCreatedAt(
+    $sortByDate: String!
+    $createdAt: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelEntryFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    entriesBySortByDateAndCreatedAt(
+      sortByDate: $sortByDate
+      createdAt: $createdAt
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        nameId
+        value
+        sortByDate
+        createdAt
+        id
         updatedAt
         owner
       }

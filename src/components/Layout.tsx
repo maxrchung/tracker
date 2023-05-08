@@ -11,7 +11,6 @@ export default function Layout() {
   const messageDefinitions = useNotificationStore(
     (state) => state.messageDefinitions
   );
-  console.log("messageDefinitions", messageDefinitions);
   const removeNotification = useNotificationStore(
     (state) => state.removeNotification
   );

@@ -3,10 +3,11 @@ type Entry
   # https://stackoverflow.com/a/67419808
   @model(timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" })
   @auth(rules: [{ allow: owner }]) {
-  id: ID! @primaryKey(sortKeyFields: ["nameId"])
-  nameId: String!
+  nameId: String! @index(sortKeyFields: ["createdAt"])
   value: Float
-  createdAt: AWSDateTime! @index(sortKeyFields: ["nameId"])
+  # Kind of wack: https://stackoverflow.com/questions/58203635/how-to-sort-by-datecreatedat-on-a-field-in-list-query-in-aws-amplify
+  sortByDate: String! @index(sortKeyFields: ["createdAt"])
+  createdAt: String!
 }
 
 type EntryName @model @auth(rules: [{ allow: owner }]) {

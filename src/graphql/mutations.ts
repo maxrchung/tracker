@@ -8,10 +8,11 @@ export const createEntry = /* GraphQL */ `
     $condition: ModelEntryConditionInput
   ) {
     createEntry(input: $input, condition: $condition) {
-      id
       nameId
       value
+      sortByDate
       createdAt
+      id
       updatedAt
       owner
     }
@@ -23,10 +24,11 @@ export const updateEntry = /* GraphQL */ `
     $condition: ModelEntryConditionInput
   ) {
     updateEntry(input: $input, condition: $condition) {
-      id
       nameId
       value
+      sortByDate
       createdAt
+      id
       updatedAt
       owner
     }
@@ -38,10 +40,11 @@ export const deleteEntry = /* GraphQL */ `
     $condition: ModelEntryConditionInput
   ) {
     deleteEntry(input: $input, condition: $condition) {
-      id
       nameId
       value
+      sortByDate
       createdAt
+      id
       updatedAt
       owner
     }
