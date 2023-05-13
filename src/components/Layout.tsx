@@ -5,7 +5,7 @@ import { Outlet, useLocation, useMatches } from "react-router-dom";
 import SideNavigation from "@cloudscape-design/components/side-navigation";
 import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
 import Flashbar from "@cloudscape-design/components/flashbar";
-import { useNotificationStore } from "../stores/notification-store";
+import { useNotificationStore } from "../stores/notification";
 
 export default function Layout() {
   const messageDefinitions = useNotificationStore(
