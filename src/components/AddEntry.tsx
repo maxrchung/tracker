@@ -60,7 +60,8 @@ export default function AddEntry() {
     return (
       <ContentLayout header={header}>
         <Alert statusIconAriaLabel="Error" type="error" header="Error">
-          We couldn't load the page. Our service may be temporarily unavailable.{" "}
+          We couldn&apos;t load the page. Our service may be temporarily
+          unavailable.{" "}
           <Link href="/entries/create">Try refreshing the page.</Link>
         </Alert>
       </ContentLayout>
