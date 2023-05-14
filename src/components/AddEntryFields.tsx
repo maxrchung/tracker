@@ -72,7 +72,7 @@ export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
               <FormField
                 label={
                   <span>
-                    Value <i>- optional</i>
+                    Number value <i>- optional</i>
                   </span>
                 }
                 errorText={error?.message}

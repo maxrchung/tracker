@@ -32,7 +32,7 @@ const requests = {
     if (entryNameId === CREATE_NEW_ENTRY) {
       const name =
         (entry.select.label === CREATE_NEW_ENTRY
-          ? entry.name
+          ? entry.name?.trim() // Trim so we don't get some weird spacing
           : entry.select.label) ?? "";
       const createEntryNameInput: CreateEntryNameInput = {
         name,

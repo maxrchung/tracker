@@ -11,9 +11,6 @@ export default function Layout() {
   const messageDefinitions = useNotificationStore(
     (state) => state.messageDefinitions
   );
-  const removeNotification = useNotificationStore(
-    (state) => state.removeNotification
-  );
 
   const { signOut, user } = useAuthenticator();
   const location = useLocation();
@@ -93,10 +90,7 @@ export default function Layout() {
               infoIconAriaLabel: "Info",
               inProgressIconAriaLabel: "In progress",
             }}
-            items={messageDefinitions.map((definition) => ({
-              ...definition,
-              onDismiss: () => removeNotification(definition.id ?? ""),
-            }))}
+            items={messageDefinitions}
             stackItems
           />
         }

@@ -34,18 +34,31 @@ export default function AddEntry() {
 
   const createEntry = useMutation({
     mutationFn: requests.createEntry,
-    onSuccess: (_data, { select, name }) => {
+    onSuccess: (_data, { select, name, value }) => {
       const entryName = select.label === CREATE_NEW_ENTRY ? name : select.label;
       navigate("/entries");
       addNotification({
         type: "success",
-        content: `Successfully added ${entryName}.`,
+        content: (
+          <>
+            You added{" "}
+            <strong>
+              {entryName} {value != null && <>({value})</>}
+            </strong>
+            .
+          </>
+        ),
       });
     },
-    onError: (error: Error | GraphQLResult) => {
+    onError: (error: Error | GraphQLResult, { select, name }) => {
+      const entryName = select.label === CREATE_NEW_ENTRY ? name : select.label;
       addNotification({
         type: "error",
-        content: `Failed to add entry. ${getErrorMessage(error)}`,
+        content: (
+          <>
+            Failed to add <strong>{entryName}</strong>. {getErrorMessage(error)}
+          </>
+        ),
       });
     },
   });

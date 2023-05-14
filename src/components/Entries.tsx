@@ -23,7 +23,7 @@ export default function Entries() {
   const [selectedItems, setSelectedItems] = React.useState<Entry[]>([]);
 
   const listEntryNames = useQuery({
-    queryKey: ["listEntryNames"],
+    queryKey: ["listEntryNames2"],
     queryFn: async () => {
       const query = await API.graphql<GraphQLQuery<ListEntryNamesQuery>>({
         query: queries.listEntryNames,
@@ -105,7 +105,7 @@ export default function Entries() {
         },
         {
           id: "value",
-          header: "Value",
+          header: "Number value",
           cell: (e) => e.value,
         },
         {
