@@ -63,17 +63,17 @@ export default function Entries() {
       columnDefinitions={[
         {
           id: "name",
-          header: "Name",
+          header: "Type",
           cell: (e) => mapEntryNames.data?.[e.nameId]?.name ?? "",
         },
         {
           id: "value",
-          header: "Number value",
+          header: "Value",
           cell: (e) => e.value,
         },
         {
           id: "date",
-          header: `Time added ${format(Date.now(), "(zzzz)")}`,
+          header: `Time ${format(Date.now(), "(zzzz)")}`,
           cell: (e) => format(new Date(e.createdAt), "MMMM d, y, h:mm aa"),
         },
       ]}

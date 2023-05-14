@@ -27,7 +27,7 @@ const router = createBrowserRouter(
         <Route
           path="create"
           element={<AddEntry />}
-          handle={{ crumb: "Create entry" }}
+          handle={{ crumb: "Add entry" }}
         />
       </Route>
       <Route

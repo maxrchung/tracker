@@ -22,7 +22,7 @@ export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
           render={({ field, fieldState: { error } }) => {
             const { onChange, value } = field;
             return (
-              <FormField label="Entry" errorText={error?.message}>
+              <FormField label="Type" errorText={error?.message}>
                 <Select
                   {...field}
                   onChange={(event) => onChange(event.detail.selectedOption)}
@@ -50,7 +50,7 @@ export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
             render={({ field, fieldState: { error } }) => {
               const { onChange, value } = field;
               return (
-                <FormField label="New entry name" errorText={error?.message}>
+                <FormField label="New type" errorText={error?.message}>
                   <Input
                     {...field}
                     value={value ?? ""}
@@ -72,10 +72,11 @@ export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
               <FormField
                 label={
                   <span>
-                    Number value <i>- optional</i>
+                    Value <i>- optional</i>
                   </span>
                 }
                 errorText={error?.message}
+                constraintText="Numeric values only."
               >
                 <Input
                   {...field}
