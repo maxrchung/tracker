@@ -5,15 +5,15 @@ import { uid } from "uid";
 
 interface NotificationState {
   messageDefinitions: FlashbarProps.MessageDefinition[];
-  addNotification: (notification: FlashbarProps.MessageDefinition) => void;
+  addSuccess: (content: React.ReactNode) => void;
+  addError: (content: React.ReactNode) => void;
 }
 
 const maxNotifications = 10;
 
 export const useNotificationStore = create<NotificationState>()(
-  devtools((set) => ({
-    messageDefinitions: [],
-    addNotification: (notification: FlashbarProps.MessageDefinition) => {
+  devtools((set) => {
+    const addNotification = (notification: FlashbarProps.MessageDefinition) => {
       const id = uid();
 
       const messageDefinition: FlashbarProps.MessageDefinition = {
@@ -35,6 +35,22 @@ export const useNotificationStore = create<NotificationState>()(
           ...state.messageDefinitions.slice(0, maxNotifications - 1),
         ],
       }));
-    },
-  }))
+    };
+
+    return {
+      messageDefinitions: [],
+      addSuccess: (content: React.ReactNode) => {
+        addNotification({
+          type: "success",
+          content,
+        });
+      },
+      addError: (content: React.ReactNode) => {
+        addNotification({
+          type: "error",
+          content,
+        });
+      },
+    };
+  })
 );

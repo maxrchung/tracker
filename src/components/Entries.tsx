@@ -10,15 +10,18 @@ import { useState } from "react";
 import format from "date-fns/format";
 import requests from "../requests";
 import { Entry } from "../API";
+import DeleteModal from "./DeleteModal";
 
 export default function Entries() {
-  const [selectedItems, setSelectedItems] = React.useState<Entry[]>([]);
+  const [selectedItem, setSelectedItem] = React.useState<Entry>();
   const [page, setPage] = useState<number>(0);
+  const [isDeleteVisible, setIsDeleteVisible] = useState(false);
 
   const mapEntryNames = useQuery({
     queryKey: ["mapEntryNames"],
     queryFn: requests.mapEntryNames,
   });
+  const entryNames = mapEntryNames.data ?? {};
 
   // null means that there are no more results
   const [tokens, setTokens] = useState<(undefined | string | null)[]>([
@@ -27,7 +30,7 @@ export default function Entries() {
 
   const listEntries = useQuery({
     queryKey: ["listEntries", tokens[page]],
-    queryFn: requests.listEntries(tokens[page]),
+    queryFn: () => requests.listEntries(tokens[page]),
     onSuccess: ({ nextToken }) => {
       if (page + 1 >= tokens.length) {
         setTokens([...tokens, nextToken]);
@@ -42,15 +45,22 @@ export default function Entries() {
       resizableColumns
       stickyHeader
       selectionType="single"
-      selectedItems={selectedItems ? selectedItems : []}
-      onSelectionChange={({ detail }) => setSelectedItems(detail.selectedItems)}
+      selectedItems={selectedItem ? [selectedItem] : []}
+      onSelectionChange={({ detail }) =>
+        setSelectedItem(detail.selectedItems[0])
+      }
       header={
         <Header
           variant="h1"
           actions={
             <SpaceBetween direction="horizontal" size="xs">
-              <Button disabled={selectedItems.length === 0}>Delete</Button>
-              <Button disabled={selectedItems.length === 0}>Edit</Button>
+              <Button
+                disabled={!selectedItem}
+                onClick={() => setIsDeleteVisible(true)}
+              >
+                Delete
+              </Button>
+              <Button disabled={!selectedItem}>Edit</Button>
               <Button variant="primary" href="/entries/create">
                 Add entry
               </Button>
@@ -58,18 +68,30 @@ export default function Entries() {
           }
         >
           Entries
+          <DeleteModal
+            isVisible={isDeleteVisible}
+            entry={selectedItem}
+            entryName={
+              selectedItem?.nameId ? entryNames[selectedItem?.nameId].name : ""
+            }
+            onCancel={() => setIsDeleteVisible(false)}
+            onSubmit={() => {
+              setIsDeleteVisible(false);
+              setSelectedItem(undefined);
+            }}
+          />
         </Header>
       }
       columnDefinitions={[
         {
           id: "name",
           header: "Type",
-          cell: (e) => mapEntryNames.data?.[e.nameId]?.name ?? "",
+          cell: (e) => entryNames[e.nameId]?.name ?? "",
         },
         {
           id: "value",
           header: "Value",
-          cell: (e) => e.value,
+          cell: (e) => e.value ?? "-",
         },
         {
           id: "date",

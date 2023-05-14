@@ -4,7 +4,7 @@ import Header from "@cloudscape-design/components/header";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import Container from "@cloudscape-design/components/container";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import type { GraphQLResult } from "@aws-amplify/api";
+import type { GraphQLResult } from "@aws-amplify/api"; // ??? idk
 import Alert from "@cloudscape-design/components/alert";
 import ContentLayout from "@cloudscape-design/components/content-layout";
 import Link from "@cloudscape-design/components/link";
@@ -17,13 +17,13 @@ import { getErrorMessage } from "../error";
 import { Schema, buildSchema } from "../schema";
 import requests from "../requests";
 import { CREATE_NEW_ENTRY } from "../constants";
-import AddEntryFields from "./AddEntryFields";
+import AddEntryFields from "./AddFields";
+import BoldEntry from "./BoldEntry";
 
-export default function AddEntry() {
+export default function AddModal() {
   const navigate = useNavigate();
-  const addNotification = useNotificationStore(
-    (state) => state.addNotification
-  );
+  const addSuccess = useNotificationStore((state) => state.addSuccess);
+  const addError = useNotificationStore((state) => state.addError);
 
   const listEntryNames = useQuery({
     queryKey: ["listEntryNames"],
@@ -37,29 +37,19 @@ export default function AddEntry() {
     onSuccess: (_data, { select, name, value }) => {
       const entryName = select.label === CREATE_NEW_ENTRY ? name : select.label;
       navigate("/entries");
-      addNotification({
-        type: "success",
-        content: (
-          <>
-            You added{" "}
-            <strong>
-              {entryName} {value != null && <>({value})</>}
-            </strong>
-            .
-          </>
-        ),
-      });
+      addSuccess(
+        <>
+          You added <BoldEntry entryName={entryName} value={value} />.
+        </>
+      );
     },
     onError: (error: Error | GraphQLResult, { select, name }) => {
       const entryName = select.label === CREATE_NEW_ENTRY ? name : select.label;
-      addNotification({
-        type: "error",
-        content: (
-          <>
-            Failed to add <strong>{entryName}</strong>. {getErrorMessage(error)}
-          </>
-        ),
-      });
+      addError(
+        <>
+          Failed to add <strong>{entryName}</strong>. {getErrorMessage(error)}
+        </>
+      );
     },
   });
 
