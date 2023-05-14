@@ -1,7 +1,7 @@
 import * as yup from "yup";
-import { SelectOption } from "./types";
 import { CREATE_NEW_ENTRY } from "./constants";
 import { EntryName } from "./API";
+import { SelectProps } from "@cloudscape-design/components/select";
 
 export const buildSchema = (entryNames: EntryName[]) =>
   yup.object({
@@ -19,7 +19,8 @@ export const buildSchema = (entryNames: EntryName[]) =>
       .string()
       .max(100, "Entry name has a maximum of 100 characters")
       .when("select", {
-        is: (select: SelectOption | null) => select?.value === CREATE_NEW_ENTRY,
+        is: (select: SelectProps.Option | null) =>
+          select?.value === CREATE_NEW_ENTRY,
         then: (schema) =>
           schema
             .required("Entry name is required")

@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useNotificationStore } from "../stores/notification";
 import { getErrorMessage } from "../error";
 import { Schema, buildSchema } from "../schema";
-import requests from "./requests";
+import requests from "../requests";
 import { CREATE_NEW_ENTRY } from "../constants";
 import AddEntryFields from "./AddEntryFields";
 
