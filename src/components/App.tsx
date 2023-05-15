@@ -10,7 +10,6 @@ import Layout from "./Layout";
 import Home from "./Home";
 import Analytics from "./Analytics";
 import Error from "./Error";
-import AddModal from "./AddModal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const router = createBrowserRouter(
@@ -24,11 +23,6 @@ const router = createBrowserRouter(
       <Route path="/" element={<Home />} handle={{ crumb: "tracker" }} />
       <Route path="entries" handle={{ crumb: "Entries" }}>
         <Route index element={<Entries />} />
-        <Route
-          path="create"
-          element={<AddModal />}
-          handle={{ crumb: "Add entry" }}
-        />
       </Route>
       <Route
         path="analytics"

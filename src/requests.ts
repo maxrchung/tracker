@@ -132,8 +132,6 @@ const hasOnlyOneEntry = async (nameId: string) => {
 const deleteEntry = async ({ id, nameId }: Entry) => {
   const hasOnlyOne = await hasOnlyOneEntry(nameId);
 
-  console.log("hasOnlyOne", hasOnlyOne);
-
   const input: DeleteEntryInput = { id };
   await API.graphql<GraphQLQuery<DeleteEntryMutation>>({
     query: mutations.deleteEntry,

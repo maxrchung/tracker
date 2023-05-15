@@ -52,7 +52,7 @@ export default function DeleteModal({
     <Modal
       onDismiss={onCancel}
       visible={isVisible}
-      header="Delete"
+      header="Delete entry"
       footer={
         <Box float="right">
           <SpaceBetween direction="horizontal" size="xs">

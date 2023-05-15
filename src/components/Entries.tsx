@@ -11,11 +11,13 @@ import format from "date-fns/format";
 import requests from "../requests";
 import { Entry } from "../API";
 import DeleteModal from "./DeleteModal";
+import AddModal from "./AddModal";
 
 export default function Entries() {
   const [selectedItem, setSelectedItem] = React.useState<Entry>();
   const [page, setPage] = useState<number>(0);
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
+  const [isAddVisible, setIsAddVisible] = useState(false);
 
   const mapEntryNames = useQuery({
     queryKey: ["mapEntryNames"],
@@ -61,8 +63,8 @@ export default function Entries() {
                 Delete
               </Button>
               <Button disabled={!selectedItem}>Edit</Button>
-              <Button variant="primary" href="/entries/create">
-                Add entry
+              <Button variant="primary" onClick={() => setIsAddVisible(true)}>
+                Add
               </Button>
             </SpaceBetween>
           }
@@ -79,6 +81,10 @@ export default function Entries() {
               setIsDeleteVisible(false);
               setSelectedItem(undefined);
             }}
+          />
+          <AddModal
+            isVisible={isAddVisible}
+            onDismiss={() => setIsAddVisible(false)}
           />
         </Header>
       }
@@ -108,7 +114,7 @@ export default function Entries() {
           <Box padding={{ bottom: "s" }} variant="p" color="inherit">
             No entries to display.
           </Box>
-          <Button>Add entry</Button>
+          <Button onClick={() => setIsAddVisible(true)}>Add</Button>
         </Box>
       }
       pagination={
