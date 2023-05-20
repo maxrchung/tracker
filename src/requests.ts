@@ -45,10 +45,10 @@ const mapEntryNames = async () => {
   return map;
 };
 
-const listEntries = async (currToken: undefined | string | null) => {
+const listPageEntries = async (token: undefined | string | null) => {
   const variables: EntriesBySortByDateAndCreatedAtQueryVariables = {
     sortByDate: SORT_KEY,
-    nextToken: currToken,
+    nextToken: token,
     sortDirection: ModelSortDirection.DESC,
     limit: MAX_PAGE,
   };
@@ -66,6 +66,29 @@ const listEntries = async (currToken: undefined | string | null) => {
       item ? [item] : []
     ) ?? [];
   const nextToken = query.data?.entriesBySortByDateAndCreatedAt?.nextToken;
+
+  return {
+    entries,
+    nextToken,
+  };
+};
+
+const listEntries = async (currToken: undefined | string | null) => {
+  const pageEntries = await listPageEntries(currToken);
+  const entries = pageEntries.entries;
+
+  // Apparently it's possible when you list with a nextToken to get no items
+  // back. Weird. This will introduce some odd behavior when a customer goes to
+  // a 2nd page and sees no entries. To account for this, I'm going to perform a
+  // second lookup and verify if that's empty.
+
+  let nextToken = pageEntries.nextToken;
+  if (nextToken) {
+    const nextEntries = await listPageEntries(nextToken);
+    if (nextEntries.entries.length === 0) {
+      nextToken = null;
+    }
+  }
 
   return {
     entries,

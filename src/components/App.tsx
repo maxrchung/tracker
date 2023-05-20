@@ -11,6 +11,7 @@ import Home from "./Home";
 import Analytics from "./Analytics";
 import Error from "./Error";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -33,7 +34,13 @@ const router = createBrowserRouter(
   )
 );
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity,
+    },
+  },
+});
 
 export default function App() {
   const { user } = useAuthenticator();
@@ -41,6 +48,7 @@ export default function App() {
     <Authenticator variation="modal" />
   ) : (
     <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <RouterProvider router={router} />
     </QueryClientProvider>
   );
