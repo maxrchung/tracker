@@ -3,8 +3,8 @@ import Input from "@cloudscape-design/components/input";
 import Select from "@cloudscape-design/components/select";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import { Controller, useWatch } from "react-hook-form";
-import { CREATE_NEW_ENTRY } from "../constants";
-import { EntryName } from "../API";
+import { EntryName } from "../../API";
+import { CREATE_NEW_ENTRY } from "../../constants";
 
 interface AddEntryFieldsProps {
   entryNames?: EntryName[];

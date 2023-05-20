@@ -2,7 +2,8 @@ import { API } from "aws-amplify";
 import { GraphQLQuery } from "@aws-amplify/api";
 import * as queries from "./graphql/queries";
 import * as mutations from "./graphql/mutations";
-import { Schema } from "./schema";
+import { Schema as AddSchema } from "./components/add/schema";
+import { Schema as EditSchema } from "./components/edit/schema";
 import {
   ListEntryNamesQuery,
   CreateEntryNameInput,
@@ -19,6 +20,7 @@ import {
   DeleteEntryInput,
   DeleteEntryMutation,
   DeleteEntryNameInput,
+  UpdateEntryInput,
 } from "./API";
 import { CREATE_NEW_ENTRY, MAX_PAGE, SORT_KEY } from "./constants";
 
@@ -32,6 +34,7 @@ const listEntryNames = async () => {
     query.data?.listEntryNames?.items?.flatMap((item) =>
       item ? [item] : []
     ) ?? [];
+  entryNames.sort();
   return entryNames;
 };
 
@@ -96,7 +99,7 @@ const listEntries = async (currToken: undefined | string | null) => {
   };
 };
 
-const createEntry = async (entry: Schema) => {
+const createEntry = async (entry: AddSchema) => {
   let entryNameId = entry.select.value;
 
   // Create entry name if new
@@ -173,6 +176,15 @@ const deleteEntry = async ({ id, nameId }: Entry) => {
   }
 };
 
+const editEntry = async ({ id, value }: UpdateEntryInput) => {
+  const input: UpdateEntryInput = { id, value };
+  await API.graphql<GraphQLQuery<CreateEntryMutation>>({
+    query: mutations.updateEntry,
+    variables: { input },
+    authMode: "AMAZON_COGNITO_USER_POOLS",
+  });
+};
+
 // Not inlining the functions here so that mapEntryNames can call listEntryNames.
 const requests = {
   listEntryNames,
@@ -180,5 +192,6 @@ const requests = {
   createEntry,
   listEntries,
   deleteEntry,
+  editEntry,
 };
 export default requests;

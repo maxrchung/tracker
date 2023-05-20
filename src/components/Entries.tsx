@@ -11,11 +11,13 @@ import format from "date-fns/format";
 import requests from "../requests";
 import { Entry } from "../API";
 import DeleteModal from "./DeleteModal";
-import AddModal from "./AddModal";
+import AddModal from "./add/AddModal";
+import EditModal from "./edit/EditModal";
 
 export default function Entries() {
   const [selectedItem, setSelectedItem] = React.useState<Entry>();
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
+  const [isEditVisible, setIsEditVisible] = useState(false);
   const [isAddVisible, setIsAddVisible] = useState(false);
 
   const mapEntryNames = useQuery({
@@ -67,7 +69,12 @@ export default function Entries() {
               >
                 Delete
               </Button>
-              <Button disabled={!selectedItem}>Edit</Button>
+              <Button
+                disabled={!selectedItem}
+                onClick={() => setIsEditVisible(true)}
+              >
+                Edit
+              </Button>
               <Button variant="primary" onClick={() => setIsAddVisible(true)}>
                 Add
               </Button>
@@ -89,6 +96,16 @@ export default function Entries() {
               setSelectedItem(undefined);
             }}
             resetPage={resetPage}
+          />
+          <EditModal
+            isVisible={isEditVisible}
+            onDismiss={() => setIsEditVisible(false)}
+            entry={selectedItem}
+            entryName={
+              selectedItem?.nameId
+                ? entryNames[selectedItem?.nameId]?.name ?? ""
+                : ""
+            }
           />
           <AddModal
             isVisible={isAddVisible}

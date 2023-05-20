@@ -1,45 +1,42 @@
 import Button from "@cloudscape-design/components/button";
 import Form from "@cloudscape-design/components/form";
-import Header from "@cloudscape-design/components/header";
 import SpaceBetween from "@cloudscape-design/components/space-between";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { GraphQLResult } from "@aws-amplify/api"; // ??? idk
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useNotificationStore } from "../stores/notification";
-import { getErrorMessage } from "../error";
-import { Schema, buildSchema } from "../schema";
-import requests from "../requests";
-import { CREATE_NEW_ENTRY } from "../constants";
-import AddEntryFields from "./AddFields";
-import BoldEntry from "./BoldEntry";
+import { useNotificationStore } from "../../stores/notification";
+import { getErrorMessage } from "../../error";
+import requests from "../../requests";
+import BoldEntry from "../BoldEntry";
 import Modal from "@cloudscape-design/components/modal";
 import Box from "@cloudscape-design/components/box";
+import { Schema, schema } from "./schema";
+import EditFields from "./EditFields";
+import { Entry } from "../../API";
 
-interface AddModalProps {
+interface EditModalProps {
   isVisible: boolean;
   onDismiss: () => void;
-  resetPage: () => void;
+  entry?: Entry;
+  entryName: string;
 }
 
-export default function AddModal({
+export default function EditModal({
   isVisible,
   onDismiss,
-  resetPage,
-}: AddModalProps) {
+  entry,
+  entryName,
+}: EditModalProps) {
   const addSuccess = useNotificationStore((state) => state.addSuccess);
   const addError = useNotificationStore((state) => state.addError);
   const queryClient = useQueryClient();
 
-  const listEntryNames = useQuery({
-    queryKey: ["listEntryNames"],
-    queryFn: requests.listEntryNames,
-  });
-  const entryNames = listEntryNames.data ?? [];
-  const schema = buildSchema(entryNames);
-
   const form = useForm<Schema>({
     resolver: yupResolver(schema),
+    values: {
+      value: entry?.value ?? undefined,
+    },
   });
 
   const onReset = () => {
@@ -47,24 +44,21 @@ export default function AddModal({
     onDismiss();
   };
 
-  const createEntry = useMutation({
-    mutationFn: requests.createEntry,
-    onSuccess: (_data, { select, name, value }) => {
+  const editEntry = useMutation({
+    mutationFn: requests.editEntry,
+    onSuccess: (_data, { value }) => {
       onReset();
-      const entryName = select.label === CREATE_NEW_ENTRY ? name : select.label;
       addSuccess(
         <>
-          You added <BoldEntry entryName={entryName} value={value} />.
+          You edited <BoldEntry entryName={entryName} value={value} />.
         </>
       );
       queryClient.clear();
-      resetPage();
     },
-    onError: (error: Error | GraphQLResult, { select, name, value }) => {
-      const entryName = select.label === CREATE_NEW_ENTRY ? name : select.label;
+    onError: (error: Error | GraphQLResult, { value }) => {
       addError(
         <>
-          Failed to add <BoldEntry entryName={entryName} value={value} />.{" "}
+          Failed to edit <BoldEntry entryName={entryName} value={value} />.{" "}
           {getErrorMessage(error)}
         </>
       );
@@ -75,7 +69,7 @@ export default function AddModal({
     <Modal
       onDismiss={onReset}
       visible={isVisible}
-      header="Add entry"
+      header="Edit entry"
       footer={
         <Box float="right">
           <SpaceBetween direction="horizontal" size="xs">
@@ -85,19 +79,31 @@ export default function AddModal({
             <Button
               variant="primary"
               onClick={() =>
-                form.handleSubmit((data) => createEntry.mutate(data))()
+                form.handleSubmit((data) =>
+                  editEntry.mutate({
+                    id: entry?.id ?? "",
+                    value: data.value,
+                  })
+                )()
               }
             >
-              Add
+              Edit
             </Button>
           </SpaceBetween>
         </Box>
       }
     >
       <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit((data) => createEntry.mutate(data))}>
+        <form
+          onSubmit={form.handleSubmit((data) =>
+            editEntry.mutate({
+              id: entry?.id ?? "",
+              value: data.value,
+            })
+          )}
+        >
           <Form variant="embedded">
-            <AddEntryFields entryNames={listEntryNames.data} />
+            <EditFields entryName={entryName} />
           </Form>
         </form>
       </FormProvider>

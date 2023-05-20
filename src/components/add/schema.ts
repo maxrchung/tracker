@@ -1,6 +1,6 @@
 import * as yup from "yup";
-import { CREATE_NEW_ENTRY, MAX_ENTRY_TYPES } from "./constants";
-import { EntryName } from "./API";
+import { CREATE_NEW_ENTRY, MAX_ENTRY_TYPES } from "../../constants";
+import { EntryName } from "../../API";
 import { SelectProps } from "@cloudscape-design/components/select";
 
 export const buildSchema = (entryNames: EntryName[]) =>
