@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Entry } from "../API";
 import Modal from "@cloudscape-design/components/modal";
 import { getErrorMessage } from "../error";
@@ -16,6 +16,7 @@ interface DeleteModalProps {
   entryName: string;
   onCancel: () => void;
   onSubmit: () => void;
+  resetPage: () => void;
 }
 
 export default function DeleteModal({
@@ -24,9 +25,11 @@ export default function DeleteModal({
   entryName,
   onCancel,
   onSubmit,
+  resetPage,
 }: DeleteModalProps) {
   const addSuccess = useNotificationStore((state) => state.addSuccess);
   const addError = useNotificationStore((state) => state.addError);
+  const queryClient = useQueryClient();
 
   const deleteEntry = useMutation({
     mutationFn: requests.deleteEntry,
@@ -37,6 +40,8 @@ export default function DeleteModal({
         </>
       );
       onSubmit();
+      queryClient.clear();
+      resetPage();
     },
     onError: (error: Error | GraphQLResult) => {
       addError(

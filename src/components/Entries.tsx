@@ -15,7 +15,6 @@ import AddModal from "./AddModal";
 
 export default function Entries() {
   const [selectedItem, setSelectedItem] = React.useState<Entry>();
-  const [page, setPage] = useState<number>(0);
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const [isAddVisible, setIsAddVisible] = useState(false);
 
@@ -25,10 +24,16 @@ export default function Entries() {
   });
   const entryNames = mapEntryNames.data ?? {};
 
+  const [page, setPage] = useState<number>(0);
   // null means that there are no more results
   const [tokens, setTokens] = useState<(undefined | string | null)[]>([
     undefined,
   ]);
+  // Explicitly reset when adding or deleting entries
+  const resetPage = () => {
+    setPage(0);
+    setTokens([undefined]);
+  };
 
   const listEntries = useQuery({
     queryKey: ["listEntries", tokens[page]],
@@ -74,17 +79,21 @@ export default function Entries() {
             isVisible={isDeleteVisible}
             entry={selectedItem}
             entryName={
-              selectedItem?.nameId ? entryNames[selectedItem?.nameId].name : ""
+              selectedItem?.nameId
+                ? entryNames[selectedItem?.nameId]?.name ?? ""
+                : ""
             }
             onCancel={() => setIsDeleteVisible(false)}
             onSubmit={() => {
               setIsDeleteVisible(false);
               setSelectedItem(undefined);
             }}
+            resetPage={resetPage}
           />
           <AddModal
             isVisible={isAddVisible}
             onDismiss={() => setIsAddVisible(false)}
+            resetPage={resetPage}
           />
         </Header>
       }
@@ -102,7 +111,7 @@ export default function Entries() {
         {
           id: "date",
           header: `Time ${format(Date.now(), "(zzzz)")}`,
-          cell: (e) => format(new Date(e.createdAt), "MMMM d, y, h:mm aa"),
+          cell: (e) => format(new Date(e.createdAt), "MMMM d, y, h:mm:ss aa"),
         },
       ]}
       items={entries}

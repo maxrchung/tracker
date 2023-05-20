@@ -2,7 +2,7 @@ import Button from "@cloudscape-design/components/button";
 import Form from "@cloudscape-design/components/form";
 import Header from "@cloudscape-design/components/header";
 import SpaceBetween from "@cloudscape-design/components/space-between";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { GraphQLResult } from "@aws-amplify/api"; // ??? idk
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -19,11 +19,17 @@ import Box from "@cloudscape-design/components/box";
 interface AddModalProps {
   isVisible: boolean;
   onDismiss: () => void;
+  resetPage: () => void;
 }
 
-export default function AddModal({ isVisible, onDismiss }: AddModalProps) {
+export default function AddModal({
+  isVisible,
+  onDismiss,
+  resetPage,
+}: AddModalProps) {
   const addSuccess = useNotificationStore((state) => state.addSuccess);
   const addError = useNotificationStore((state) => state.addError);
+  const queryClient = useQueryClient();
 
   const listEntryNames = useQuery({
     queryKey: ["listEntryNames"],
@@ -51,6 +57,8 @@ export default function AddModal({ isVisible, onDismiss }: AddModalProps) {
           You added <BoldEntry entryName={entryName} value={value} />.
         </>
       );
+      queryClient.clear();
+      resetPage();
     },
     onError: (error: Error | GraphQLResult, { select, name, value }) => {
       const entryName = select.label === CREATE_NEW_ENTRY ? name : select.label;
