@@ -1,19 +1,24 @@
+import { SelectProps } from "@cloudscape-design/components/select";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
+import { CREATE_NEW_ENTRY } from "../constants";
 
 interface ApplicationStore {
-  addEntryNameId: string;
-  setAddEntryNameId: (entryNameId: string) => void;
+  addEntrySelect: SelectProps.Option;
+  setAddEntrySelect: (entrySelect: SelectProps.Option) => void;
 }
 
 export const useApplicationStore = create<ApplicationStore>()(
   devtools(
     persist(
       (set) => ({
-        addEntryNameId: "",
-        setAddEntryNameId: (entryNameId: string) => {
+        addEntrySelect: {
+          label: CREATE_NEW_ENTRY,
+          value: CREATE_NEW_ENTRY,
+        },
+        setAddEntrySelect: (entrySelect: SelectProps.Option) => {
           set(() => ({
-            addEntryNameId: entryNameId,
+            addEntrySelect: entrySelect,
           }));
         },
       }),

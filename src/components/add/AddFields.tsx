@@ -5,6 +5,7 @@ import SpaceBetween from "@cloudscape-design/components/space-between";
 import { Controller, useWatch } from "react-hook-form";
 import { EntryName } from "../../API";
 import { CREATE_NEW_ENTRY } from "../../constants";
+import { useApplicationStore } from "../../stores/application";
 
 interface AddEntryFieldsProps {
   entryNames?: EntryName[];
@@ -12,6 +13,9 @@ interface AddEntryFieldsProps {
 
 export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
   const select = useWatch({ name: "select" });
+  const setAddEntrySelect = useApplicationStore(
+    (state) => state.setAddEntrySelect
+  );
 
   return (
     <SpaceBetween size="l">
@@ -25,7 +29,10 @@ export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
                 {...field}
                 loadingText="Loading entry types..."
                 statusType={entryNames ? "finished" : "loading"}
-                onChange={(event) => onChange(event.detail.selectedOption)}
+                onChange={(event) => {
+                  setAddEntrySelect(event.detail.selectedOption);
+                  onChange(event.detail.selectedOption);
+                }}
                 selectedOption={value}
                 options={
                   !entryNames

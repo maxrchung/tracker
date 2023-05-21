@@ -15,6 +15,7 @@ import EditFields from "./AddFields";
 import BoldEntry from "../BoldEntry";
 import Modal from "@cloudscape-design/components/modal";
 import Box from "@cloudscape-design/components/box";
+import { useApplicationStore } from "../../stores/application";
 
 interface AddModalProps {
   isVisible: boolean;
@@ -29,6 +30,10 @@ export default function AddModal({
 }: AddModalProps) {
   const addSuccess = useNotificationStore((state) => state.addSuccess);
   const addError = useNotificationStore((state) => state.addError);
+  const addEntrySelect = useApplicationStore((state) => state.addEntrySelect);
+
+  console.log(addEntrySelect);
+
   const queryClient = useQueryClient();
 
   const listEntryNames = useQuery({
@@ -40,6 +45,9 @@ export default function AddModal({
 
   const form = useForm<Schema>({
     resolver: yupResolver(schema),
+    values: {
+      select: addEntrySelect,
+    },
   });
 
   const onReset = () => {
