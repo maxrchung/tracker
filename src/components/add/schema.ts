@@ -15,29 +15,27 @@ export const buildSchema = (entryNames: EntryName[]) =>
         "Type is required.",
         (select) => select && !!select.label && !!select.value
       ),
-    name: yup
-      .string()
-      .max(100, "Type has a maximum of 100 characters.")
-      .when("select", {
-        is: (select: SelectProps.Option | null) =>
-          select?.value === CREATE_NEW_ENTRY,
-        then: (schema) =>
-          schema
-            .required("Entry type is required.")
-            .test(
-              "max",
-              () =>
-                `We couldn't add new entry type. Only ${MAX_ENTRY_TYPES} entry types are allowed.`,
-              () => entryNames.length <= MAX_ENTRY_TYPES
-            )
-            .test(
-              "unique",
-              ({ value }) => {
-                return `${value} is already an entry. Select it from the Entry drop down.`;
-              },
-              (value) => !entryNames.some((item) => item.name === value)
-            ),
-      }),
+    name: yup.string().when("select", {
+      is: (select: SelectProps.Option | null) =>
+        select?.value === CREATE_NEW_ENTRY,
+      then: (schema) =>
+        schema
+          .required("Entry type is required.")
+          .max(100, "Type has a maximum of 100 characters.")
+          .test(
+            "max",
+            () =>
+              `Failed to add new type. Only ${MAX_ENTRY_TYPES} types are allowed.`,
+            () => entryNames.length <= MAX_ENTRY_TYPES
+          )
+          .test(
+            "unique",
+            ({ value }) => {
+              return `${value} is already a type. Select it from the Type drop down.`;
+            },
+            (value) => !entryNames.some((item) => item.name === value)
+          ),
+    }),
     value: yup.number(),
   });
 

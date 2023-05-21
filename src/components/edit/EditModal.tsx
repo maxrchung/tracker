@@ -1,7 +1,7 @@
 import Button from "@cloudscape-design/components/button";
 import Form from "@cloudscape-design/components/form";
 import SpaceBetween from "@cloudscape-design/components/space-between";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { GraphQLResult } from "@aws-amplify/api"; // ??? idk
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -11,7 +11,7 @@ import requests from "../../requests";
 import BoldEntry from "../BoldEntry";
 import Modal from "@cloudscape-design/components/modal";
 import Box from "@cloudscape-design/components/box";
-import { Schema, schema } from "./schema";
+import { Schema, buildSchema } from "./schema";
 import EditFields from "./EditFields";
 import { Entry } from "../../API";
 
@@ -32,9 +32,17 @@ export default function EditModal({
   const addError = useNotificationStore((state) => state.addError);
   const queryClient = useQueryClient();
 
+  const listEntryNames = useQuery({
+    queryKey: ["listEntryNames"],
+    queryFn: requests.listEntryNames,
+  });
+  const entryNames = listEntryNames.data ?? [];
+  const schema = buildSchema(entryNames, entryName);
+
   const form = useForm<Schema>({
     resolver: yupResolver(schema),
     values: {
+      name: entryName,
       value: entry?.value ?? undefined,
     },
   });
@@ -46,19 +54,19 @@ export default function EditModal({
 
   const editEntry = useMutation({
     mutationFn: requests.editEntry,
-    onSuccess: (_data, { value }) => {
+    onSuccess: (_data, { name, value }) => {
       onReset();
       addSuccess(
         <>
-          You edited <BoldEntry entryName={entryName} value={value} />.
+          You edited <BoldEntry entryName={name} value={value} />.
         </>
       );
       queryClient.clear();
     },
-    onError: (error: Error | GraphQLResult, { value }) => {
+    onError: (error: Error | GraphQLResult, { name, value }) => {
       addError(
         <>
-          Failed to edit <BoldEntry entryName={entryName} value={value} />.{" "}
+          Failed to edit <BoldEntry entryName={name} value={value} />.{" "}
           {getErrorMessage(error)}
         </>
       );
@@ -81,8 +89,9 @@ export default function EditModal({
               onClick={() =>
                 form.handleSubmit((data) =>
                   editEntry.mutate({
-                    id: entry?.id ?? "",
-                    value: data.value,
+                    ...data,
+                    nameId: entry?.nameId ?? "",
+                    entryId: entry?.id ?? "",
                   })
                 )()
               }
@@ -97,8 +106,9 @@ export default function EditModal({
         <form
           onSubmit={form.handleSubmit((data) =>
             editEntry.mutate({
-              id: entry?.id ?? "",
-              value: data.value,
+              ...data,
+              nameId: entry?.nameId ?? "",
+              entryId: entry?.id ?? "",
             })
           )}
         >

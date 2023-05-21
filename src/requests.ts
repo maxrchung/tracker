@@ -21,6 +21,9 @@ import {
   DeleteEntryMutation,
   DeleteEntryNameInput,
   UpdateEntryInput,
+  UpdateEntryNameInput,
+  UpdateEntryNameMutation,
+  UpdateEntryMutation,
 } from "./API";
 import { CREATE_NEW_ENTRY, MAX_PAGE, SORT_KEY } from "./constants";
 
@@ -176,13 +179,34 @@ const deleteEntry = async ({ id, nameId }: Entry) => {
   }
 };
 
-const editEntry = async ({ id, value }: UpdateEntryInput) => {
-  const input: UpdateEntryInput = { id, value };
-  await API.graphql<GraphQLQuery<CreateEntryMutation>>({
-    query: mutations.updateEntry,
-    variables: { input },
-    authMode: "AMAZON_COGNITO_USER_POOLS",
-  });
+type EditSchemaWithIds = EditSchema & {
+  entryId: string;
+  nameId: string;
+};
+
+const editEntry = async ({
+  name,
+  value,
+  nameId,
+  entryId,
+}: EditSchemaWithIds) => {
+  if (name) {
+    const input: UpdateEntryNameInput = { id: nameId, name };
+    await API.graphql<GraphQLQuery<UpdateEntryNameMutation>>({
+      query: mutations.updateEntryName,
+      variables: { input },
+      authMode: "AMAZON_COGNITO_USER_POOLS",
+    });
+  }
+
+  if (value) {
+    const input: UpdateEntryInput = { id: entryId, value };
+    await API.graphql<GraphQLQuery<UpdateEntryMutation>>({
+      query: mutations.updateEntry,
+      variables: { input },
+      authMode: "AMAZON_COGNITO_USER_POOLS",
+    });
+  }
 };
 
 // Not inlining the functions here so that mapEntryNames can call listEntryNames.
