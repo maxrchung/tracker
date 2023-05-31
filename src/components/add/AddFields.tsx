@@ -13,9 +13,7 @@ interface AddEntryFieldsProps {
 
 export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
   const select = useWatch({ name: "select" });
-  const setAddEntrySelect = useApplicationStore(
-    (state) => state.setAddEntrySelect
-  );
+  const setAddEntrySelect = useApplicationStore((state) => state.setAddSelect);
 
   return (
     <SpaceBetween size="l">
@@ -27,7 +25,7 @@ export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
             <FormField label="Type" errorText={error?.message}>
               <Select
                 {...field}
-                loadingText="Loading entry types..."
+                loadingText="Loading types..."
                 statusType={entryNames ? "finished" : "loading"}
                 onChange={(event) => {
                   setAddEntrySelect(event.detail.selectedOption);

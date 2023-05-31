@@ -30,9 +30,7 @@ export default function AddModal({
 }: AddModalProps) {
   const addSuccess = useNotificationStore((state) => state.addSuccess);
   const addError = useNotificationStore((state) => state.addError);
-  const addEntrySelect = useApplicationStore((state) => state.addEntrySelect);
-
-  console.log(addEntrySelect);
+  const addSelect = useApplicationStore((state) => state.addSelect);
 
   const queryClient = useQueryClient();
 
@@ -46,7 +44,7 @@ export default function AddModal({
   const form = useForm<Schema>({
     resolver: yupResolver(schema),
     values: {
-      select: addEntrySelect,
+      select: addSelect,
     },
   });
 
