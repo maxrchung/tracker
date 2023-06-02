@@ -11,39 +11,80 @@ import SpaceBetween from "@cloudscape-design/components/space-between";
 import { useState } from "react";
 import { TimeOption } from "../types";
 import { useApplicationStore } from "../stores/application";
+import { useQuery } from "@tanstack/react-query";
+import requests from "../requests";
+import { CHART_ALL_ENTRIES, CHART_FREQUENCY, CHART_VALUE } from "../constants";
 
 export default function Analytics() {
   const chartType = useApplicationStore((state) => state.chartType);
   const setChartType = useApplicationStore((state) => state.setChartType);
+  const chartStat = useApplicationStore((state) => state.chartStat);
+  const setChartStat = useApplicationStore((state) => state.setChartStat);
   const chartTime = useApplicationStore((state) => state.chartTime);
   const setChartTime = useApplicationStore((state) => state.setChartTime);
 
-  // const listEntries = useQuery({
-  //   queryKey: ["listEntries", tokens[page]],
-  //   queryFn: () => requests.listEntries(tokens[page]),
-  //   onSuccess: ({ nextToken }) => {
-  //     if (page + 1 >= tokens.length) {
-  //       setTokens([...tokens, nextToken]);
-  //     }
-  //   },
-  // });
-  // const entries = listEntries.data?.entries ?? [];
+  const listEntryNames = useQuery({
+    queryKey: ["listEntryNamesFilter"],
+    queryFn: async () => {
+      const entryNames = await requests.listEntryNames();
+      if (entryNames.length === 0) {
+        return [];
+      }
 
-  const [type, setType] = useState();
-  const [time, setTime] = useState<TimeOption>(chartTime);
+      const options = [
+        { value: CHART_ALL_ENTRIES },
+        ...entryNames.map(({ name, id }) => ({ label: name, value: id })),
+      ];
+      return options;
+    },
+  });
+  const options = listEntryNames.data ?? [];
+
+  const [type, setType] = useState(chartType);
+  const [stat, setStat] = useState(chartStat);
+  const [time, setTime] = useState(chartTime);
 
   return (
     <ContentLayout header={<Header variant="h1">Analytics</Header>}>
       <Container>
         <SpaceBetween size="l">
-          <ColumnLayout columns={2}>
+          <ColumnLayout columns={3}>
             <FormField label="Type">
               <Select
                 loadingText="Loading types..."
                 statusType="finished"
-                onChange={() => {}}
-                selectedOption={null}
-                options={[]}
+                onChange={(event) => {
+                  const type = event.detail.selectedOption;
+                  setType(type);
+                  setChartType(type);
+
+                  if (type.value === CHART_ALL_ENTRIES) {
+                    setStat({ value: CHART_FREQUENCY });
+                    setChartStat({ value: CHART_FREQUENCY });
+                  }
+                }}
+                selectedOption={type}
+                options={options}
+                selectedAriaLabel="Selected"
+                empty="No types"
+              />
+            </FormField>
+
+            <FormField label="Stat">
+              <Select
+                onChange={(event) => {
+                  const stat = event.detail.selectedOption;
+                  setStat(stat);
+                  setChartStat(stat);
+                }}
+                selectedOption={stat}
+                options={[
+                  { value: CHART_FREQUENCY },
+                  {
+                    value: CHART_VALUE,
+                    disabled: type.value !== CHART_ALL_ENTRIES,
+                  },
+                ]}
                 selectedAriaLabel="Selected"
               />
             </FormField>
@@ -51,11 +92,11 @@ export default function Analytics() {
             <FormField label="Time">
               <Select
                 onChange={(event) => {
-                  const time = event.detail.selectedOption.value as TimeOption;
+                  const time = event.detail.selectedOption;
                   setTime(time);
                   setChartTime(time);
                 }}
-                selectedOption={{ value: time }}
+                selectedOption={time}
                 options={[
                   { value: TimeOption.LAST_DAY },
                   { value: TimeOption.LAST_WEEK },

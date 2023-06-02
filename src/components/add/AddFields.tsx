@@ -36,10 +36,7 @@ export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
                   !entryNames
                     ? []
                     : [
-                        {
-                          label: CREATE_NEW_ENTRY,
-                          value: CREATE_NEW_ENTRY,
-                        },
+                        { value: CREATE_NEW_ENTRY },
                         ...(entryNames?.map((item) => ({
                           label: item.name,
                           value: item.id,

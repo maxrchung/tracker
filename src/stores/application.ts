@@ -1,7 +1,11 @@
 import { SelectProps } from "@cloudscape-design/components/select";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { CREATE_NEW_ENTRY } from "../constants";
+import {
+  CHART_ALL_ENTRIES,
+  CHART_FREQUENCY,
+  CREATE_NEW_ENTRY,
+} from "../constants";
 import { TimeOption } from "../types";
 
 interface ApplicationStore {
@@ -9,39 +13,34 @@ interface ApplicationStore {
   setAddSelect: (option: SelectProps.Option) => void;
   chartType: SelectProps.Option;
   setChartType: (option: SelectProps.Option) => void;
+  chartStat: SelectProps.Option;
+  setChartStat: (option: SelectProps.Option) => void;
   chartTime: SelectProps.Option;
-  setChartTime: (option: TimeOption) => void;
+  setChartTime: (option: SelectProps.Option) => void;
 }
 
 export const useApplicationStore = create<ApplicationStore>()(
   devtools(
     persist(
       (set) => ({
-        addSelect: {
-          label: CREATE_NEW_ENTRY,
-          value: CREATE_NEW_ENTRY,
-        },
+        addSelect: { value: CREATE_NEW_ENTRY },
         setAddSelect: (option: SelectProps.Option) => {
           set(() => ({ addSelect: option }));
         },
-        chartType: {
-          label: TimeOption.LAST_WEEK,
-          value: TimeOption.LAST_WEEK,
-        },
+        chartType: { value: CHART_ALL_ENTRIES },
         setChartType: (option: SelectProps.Option) => {
           set(() => ({ chartType: option }));
         },
-        chartTime: {
-          label: TimeOption.LAST_WEEK,
-          value: TimeOption.LAST_WEEK,
+        chartStat: { value: CHART_FREQUENCY },
+        setChartStat: (option: SelectProps.Option) => {
+          set(() => ({ chartStat: option }));
         },
+        chartTime: { value: TimeOption.LAST_WEEK },
         setChartTime: (option: SelectProps.Option) => {
           set(() => ({ chartTime: option }));
         },
       }),
-      {
-        name: "application-storage",
-      }
+      { name: "application-storage" }
     )
   )
 );
