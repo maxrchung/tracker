@@ -7,12 +7,12 @@ import Pagination from "@cloudscape-design/components/pagination";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import format from "date-fns/format";
 import requests from "../requests";
 import { Entry } from "../API";
 import DeleteModal from "./DeleteModal";
 import AddModal from "./add/AddModal";
 import EditModal from "./edit/EditModal";
+import { formatTableTime, formatTimeZone } from "../time";
 
 export default function Entries() {
   const [selectedItem, setSelectedItem] = React.useState<Entry>();
@@ -127,8 +127,8 @@ export default function Entries() {
         },
         {
           id: "date",
-          header: `Time ${format(Date.now(), "(zzzz)")}`,
-          cell: (e) => format(new Date(e.createdAt), "MMMM d, y, h:mm:ss aa"),
+          header: `Time ${formatTimeZone()}`,
+          cell: (e) => formatTableTime(new Date(e.createdAt)),
         },
       ]}
       items={entries}

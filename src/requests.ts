@@ -102,6 +102,31 @@ const listEntries = async (currToken: undefined | string | null) => {
   };
 };
 
+const listEntriesChart = async (type: string, time: string) => {
+  const variables: EntriesBySortByDateAndCreatedAtQueryVariables = {
+    sortByDate: SORT_KEY,
+    sortDirection: ModelSortDirection.DESC,
+    limit: MAX_PAGE,
+    filter: {
+      createdAt: { gt: time },
+      nameId: { eq: type },
+    },
+  };
+  const query = await API.graphql<
+    GraphQLQuery<EntriesBySortByDateAndCreatedAtQuery>
+  >({
+    query: queries.entriesBySortByDateAndCreatedAt,
+    variables,
+    authMode: "AMAZON_COGNITO_USER_POOLS",
+  });
+
+  const entries: Entry[] =
+    query.data?.entriesBySortByDateAndCreatedAt?.items?.flatMap((item) =>
+      item ? [item] : []
+    ) ?? [];
+  return entries;
+};
+
 const createEntry = async (entry: AddSchema) => {
   let entryNameId = entry.select.value;
 
@@ -215,6 +240,7 @@ const requests = {
   mapEntryNames,
   createEntry,
   listEntries,
+  listEntriesChart,
   deleteEntry,
   editEntry,
 };
