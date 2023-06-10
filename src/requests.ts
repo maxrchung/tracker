@@ -25,7 +25,16 @@ import {
   UpdateEntryNameMutation,
   UpdateEntryMutation,
 } from "./API";
-import { CREATE_NEW_ENTRY, MAX_PAGE, SORT_KEY } from "./constants";
+import {
+  CHART_ALL_ENTRIES,
+  CREATE_NEW_ENTRY,
+  MAX_PAGE,
+  SORT_KEY,
+} from "./constants";
+import { TimeOption } from "./types";
+import subMonths from "date-fns/subMonths";
+import subWeeks from "date-fns/subWeeks";
+import subDays from "date-fns/subDays";
 
 const listEntryNames = async () => {
   const query = await API.graphql<GraphQLQuery<ListEntryNamesQuery>>({
@@ -102,15 +111,54 @@ const listEntries = async (currToken: undefined | string | null) => {
   };
 };
 
-const listEntriesChart = async (type: string, time: string) => {
-  const variables: EntriesBySortByDateAndCreatedAtQueryVariables = {
-    sortByDate: SORT_KEY,
+const getTime = (timeOption: string) => {
+  switch (timeOption) {
+    case TimeOption.LAST_MONTH:
+      return subMonths(new Date(), 1);
+    case TimeOption.LAST_WEEK:
+      return subWeeks(new Date(), 1);
+    case TimeOption.LAST_DAY:
+      return subDays(new Date(), 1);
+    case TimeOption.ALL_TIME:
+    default:
+      return new Date();
+  }
+};
+
+const listEntriesChart = async (type: string, timeOption: string) => {
+  const time = getTime(timeOption).toISOString();
+  const entries = await (type === CHART_ALL_ENTRIES
+    ? listEntriesChartByAll(time)
+    : listEntriesChartByNameId(type, time));
+  return entries;
+};
+
+const listEntriesChartByNameId = async (nameId: string, time: string) => {
+  const variables: EntriesByNameIdAndCreatedAtQueryVariables = {
     sortDirection: ModelSortDirection.DESC,
-    limit: MAX_PAGE,
-    filter: {
-      createdAt: { gt: time },
-      nameId: { eq: type },
-    },
+    nameId,
+    createdAt: { gt: time },
+  };
+  const query = await API.graphql<
+    GraphQLQuery<EntriesByNameIdAndCreatedAtQuery>
+  >({
+    query: queries.entriesByNameIdAndCreatedAt,
+    variables,
+    authMode: "AMAZON_COGNITO_USER_POOLS",
+  });
+
+  const entries: Entry[] =
+    query.data?.entriesByNameIdAndCreatedAt?.items?.flatMap((item) =>
+      item ? [item] : []
+    ) ?? [];
+  return entries;
+};
+
+const listEntriesChartByAll = async (time: string) => {
+  const variables: EntriesBySortByDateAndCreatedAtQueryVariables = {
+    sortDirection: ModelSortDirection.DESC,
+    sortByDate: SORT_KEY,
+    createdAt: { gt: time },
   };
   const query = await API.graphql<
     GraphQLQuery<EntriesBySortByDateAndCreatedAtQuery>

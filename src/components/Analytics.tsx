@@ -147,6 +147,7 @@ export default function Analytics() {
             errorText="Error loading data."
             height={300}
             hideFilter
+            hideLegend
             loadingText="Loading data..."
             xScaleType="time"
             xTitle={`Time ${formatTimeZone()}`}
