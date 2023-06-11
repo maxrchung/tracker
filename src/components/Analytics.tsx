@@ -43,6 +43,8 @@ export default function Analytics() {
   const { entries, maxValue, minDate } =
     listEntriesChart.data ?? DEFAULT_RESULTS;
 
+  console.log(entries, maxValue, minDate);
+
   return (
     <Container header={<Header variant="h2">Analytics</Header>}>
       <SpaceBetween size="l">

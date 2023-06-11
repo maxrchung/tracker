@@ -131,11 +131,11 @@ const listEntriesChart = async (type?: string, timeOption?: string) => {
     return DEFAULT_RESULTS;
   }
 
-  const time = getTime(timeOption).toISOString();
+  const time = getTime(timeOption);
   const variables: EntriesByNameIdAndCreatedAtQueryVariables = {
     sortDirection: ModelSortDirection.DESC,
     nameId: type,
-    createdAt: { gt: time },
+    createdAt: { gt: time.toISOString() },
   };
   const query = await API.graphql<
     GraphQLQuery<EntriesByNameIdAndCreatedAtQuery>
