@@ -50,9 +50,8 @@ export default function Entries() {
 
   return (
     <Table
-      variant="full-page"
+      variant="container"
       resizableColumns
-      stickyHeader
       selectionType="single"
       selectedItems={selectedItem ? [selectedItem] : []}
       onSelectionChange={({ detail }) =>
@@ -60,7 +59,7 @@ export default function Entries() {
       }
       header={
         <Header
-          variant="h1"
+          variant="h2"
           actions={
             <SpaceBetween direction="horizontal" size="xs">
               <Button

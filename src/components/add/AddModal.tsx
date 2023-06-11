@@ -82,7 +82,7 @@ export default function AddModal({
     <Modal
       onDismiss={onReset}
       visible={isVisible}
-      header="Add entry"
+      header="Add"
       footer={
         <Box float="right">
           <SpaceBetween direction="horizontal" size="xs">

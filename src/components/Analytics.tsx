@@ -45,95 +45,93 @@ export default function Analytics() {
     listEntriesChart.data ?? DEFAULT_RESULTS;
 
   return (
-    <ContentLayout header={<Header variant="h1">Analytics</Header>}>
-      <Container header={<Header variant="h2">Analytics</Header>}>
-        <SpaceBetween size="l">
-          <ColumnLayout columns={3}>
-            <FormField label="Type">
-              <Select
-                loadingText="Loading types..."
-                statusType="finished"
-                onChange={(event) => {
-                  const type = event.detail.selectedOption;
-                  setChartType(type);
-                }}
-                selectedOption={chartType}
-                options={options}
-                selectedAriaLabel="Selected"
-                empty="No types"
-              />
-            </FormField>
+    <Container header={<Header variant="h2">Analytics</Header>}>
+      <SpaceBetween size="l">
+        <ColumnLayout columns={2}>
+          <FormField label="Type">
+            <Select
+              loadingText="Loading types..."
+              statusType="finished"
+              onChange={(event) => {
+                const type = event.detail.selectedOption;
+                setChartType(type);
+              }}
+              selectedOption={chartType}
+              options={options}
+              selectedAriaLabel="Selected"
+              empty="No types"
+            />
+          </FormField>
 
-            <FormField label="Time">
-              <Select
-                onChange={(event) => {
-                  const time = event.detail.selectedOption;
-                  setChartTime(time);
-                }}
-                selectedOption={chartTime}
-                options={[
-                  { value: TimeOption.LAST_DAY },
-                  { value: TimeOption.LAST_WEEK },
-                  { value: TimeOption.LAST_MONTH },
-                  { value: TimeOption.ALL_TIME },
-                ]}
-                selectedAriaLabel="Selected"
-              />
-            </FormField>
-          </ColumnLayout>
+          <FormField label="Time">
+            <Select
+              onChange={(event) => {
+                const time = event.detail.selectedOption;
+                setChartTime(time);
+              }}
+              selectedOption={chartTime}
+              options={[
+                { value: TimeOption.LAST_DAY },
+                { value: TimeOption.LAST_WEEK },
+                { value: TimeOption.LAST_MONTH },
+                { value: TimeOption.ALL_TIME },
+              ]}
+              selectedAriaLabel="Selected"
+            />
+          </FormField>
+        </ColumnLayout>
 
-          <LineChart
-            statusType={
-              listEntryNames.isLoading || listEntriesChart.isLoading
-                ? "loading"
-                : "finished"
-            }
-            series={
-              entries.length === 0
-                ? []
-                : [
-                    {
-                      title: chartType.label ?? "",
-                      type: "line",
-                      data: entries.map(({ createdAt, value }) => ({
-                        x: new Date(createdAt),
-                        y: value,
-                      })),
-                    },
-                  ]
-            }
-            xDomain={[minDate, new Date()]}
-            yDomain={[0, maxValue]}
-            i18nStrings={{
-              filterLabel: "Filter displayed data",
-              filterPlaceholder: "Filter data",
-              filterSelectedAriaLabel: "selected",
-              detailPopoverDismissAriaLabel: "Dismiss",
-              legendAriaLabel: "Legend",
-              chartAriaRoleDescription: "line chart",
-              xTickFormatter: (e) =>
-                [formatChartDate(e), formatChartTime(e)].join("\n"),
-            }}
-            ariaLabel="Single data series line chart"
-            errorText="Error loading data."
-            height={300}
-            hideFilter
-            hideLegend
-            loadingText="Loading data..."
-            xScaleType="time"
-            xTitle={`Time ${formatTimeZone()}`}
-            yTitle="Value"
-            empty={
-              <Box textAlign="center" color="inherit">
-                <b>No data</b>
-                <Box variant="p" color="inherit">
-                  No data to display.
-                </Box>
+        <LineChart
+          statusType={
+            listEntryNames.isLoading || listEntriesChart.isLoading
+              ? "loading"
+              : "finished"
+          }
+          series={
+            entries.length === 0
+              ? []
+              : [
+                  {
+                    title: chartType.label ?? "",
+                    type: "line",
+                    data: entries.map(({ createdAt, value }) => ({
+                      x: new Date(createdAt),
+                      y: value,
+                    })),
+                  },
+                ]
+          }
+          xDomain={[minDate, new Date()]}
+          yDomain={[0, maxValue]}
+          i18nStrings={{
+            filterLabel: "Filter displayed data",
+            filterPlaceholder: "Filter data",
+            filterSelectedAriaLabel: "selected",
+            detailPopoverDismissAriaLabel: "Dismiss",
+            legendAriaLabel: "Legend",
+            chartAriaRoleDescription: "line chart",
+            xTickFormatter: (e) =>
+              [formatChartDate(e), formatChartTime(e)].join("\n"),
+          }}
+          ariaLabel="Single data series line chart"
+          errorText="Error loading data."
+          height={300}
+          hideFilter
+          hideLegend
+          loadingText="Loading data..."
+          xScaleType="time"
+          xTitle={`Time ${formatTimeZone()}`}
+          yTitle="Value"
+          empty={
+            <Box textAlign="center" color="inherit">
+              <b>No data</b>
+              <Box variant="p" color="inherit">
+                No data to display.
               </Box>
-            }
-          />
-        </SpaceBetween>
-      </Container>
-    </ContentLayout>
+            </Box>
+          }
+        />
+      </SpaceBetween>
+    </Container>
   );
 }
