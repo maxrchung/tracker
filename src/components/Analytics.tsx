@@ -12,7 +12,12 @@ import { TimeOption } from "../types";
 import { useApplicationStore } from "../stores/application";
 import { useQuery } from "@tanstack/react-query";
 import requests from "../requests";
-import { CHART_ALL_ENTRIES, CHART_FREQUENCY, CHART_VALUE } from "../constants";
+import {
+  CHART_ALL_ENTRIES,
+  CHART_FREQUENCY,
+  CHART_VALUE,
+  DEFAULT_RESULTS,
+} from "../constants";
 import { formatChartDate, formatChartTime, formatTimeZone } from "../time";
 
 export default function Analytics() {
@@ -46,14 +51,10 @@ export default function Analytics() {
 
   const listEntriesChart = useQuery({
     queryKey: ["listEntriesChart", type, time],
-    queryFn: async () => {
-      if (!type.value || !time.value) {
-        return [];
-      }
-      return await requests.listEntriesChart(type.value, time.value);
-    },
+    queryFn: () => requests.listEntriesChart(type.value, time.value),
   });
-  const entries = listEntriesChart.data ?? [];
+  const { entries, maxValue, minDate } =
+    listEntriesChart.data ?? DEFAULT_RESULTS;
 
   return (
     <ContentLayout header={<Header variant="h1">Analytics</Header>}>
@@ -93,7 +94,7 @@ export default function Analytics() {
                   { value: CHART_FREQUENCY },
                   {
                     value: CHART_VALUE,
-                    disabled: type.value !== CHART_ALL_ENTRIES,
+                    disabled: type.value === CHART_ALL_ENTRIES,
                   },
                 ]}
                 selectedAriaLabel="Selected"
@@ -120,19 +121,27 @@ export default function Analytics() {
           </ColumnLayout>
 
           <LineChart
-            statusType={listEntryNames.isLoading ? "loading" : "finished"}
-            series={[
-              {
-                title: type.label ?? "",
-                type: "line",
-                data: entries.map((entry) => ({
-                  x: new Date(entry.createdAt),
-                  y: stat.value === CHART_FREQUENCY ? 1 : entry.value ?? 0,
-                })),
-              },
-            ]}
-            xDomain={[new Date(1601017200000), new Date(1601046000000)]}
-            yDomain={[0, 500000]}
+            statusType={
+              listEntryNames.isLoading || listEntriesChart.isLoading
+                ? "loading"
+                : "finished"
+            }
+            series={
+              entries.length === 0
+                ? []
+                : [
+                    {
+                      title: type.label ?? "",
+                      type: "line",
+                      data: entries.map(({ createdAt, value }) => ({
+                        x: new Date(createdAt),
+                        y: stat.value === CHART_FREQUENCY ? 1 : value ?? 0,
+                      })),
+                    },
+                  ]
+            }
+            xDomain={[minDate, new Date()]}
+            yDomain={[0, stat.value === CHART_FREQUENCY ? 0 : maxValue]}
             i18nStrings={{
               filterLabel: "Filter displayed data",
               filterPlaceholder: "Filter data",

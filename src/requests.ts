@@ -28,13 +28,15 @@ import {
 import {
   CHART_ALL_ENTRIES,
   CREATE_NEW_ENTRY,
+  DEFAULT_RESULTS,
   MAX_PAGE,
   SORT_KEY,
 } from "./constants";
-import { TimeOption } from "./types";
+import { ChartResults, TimeOption } from "./types";
 import subMonths from "date-fns/subMonths";
 import subWeeks from "date-fns/subWeeks";
 import subDays from "date-fns/subDays";
+import { compareDesc } from "date-fns";
 
 const listEntryNames = async () => {
   const query = await API.graphql<GraphQLQuery<ListEntryNamesQuery>>({
@@ -121,16 +123,43 @@ const getTime = (timeOption: string) => {
       return subDays(new Date(), 1);
     case TimeOption.ALL_TIME:
     default:
-      return new Date();
+      return new Date(0);
   }
 };
 
-const listEntriesChart = async (type: string, timeOption: string) => {
+const listEntriesChart = async (type?: string, timeOption?: string) => {
+  if (!type || !timeOption) {
+    return DEFAULT_RESULTS;
+  }
+
   const time = getTime(timeOption).toISOString();
   const entries = await (type === CHART_ALL_ENTRIES
     ? listEntriesChartByAll(time)
     : listEntriesChartByNameId(type, time));
-  return entries;
+
+  const results = entries.reduce(
+    (prev, curr) => {
+      if (curr.value && curr.value > prev.maxValue) {
+        prev.maxValue = curr.value;
+      }
+
+      const createdAt = new Date(curr.createdAt);
+      if (
+        timeOption === TimeOption.ALL_TIME &&
+        compareDesc(createdAt, prev.minDate) === 1
+      ) {
+        prev.minDate = createdAt;
+      }
+
+      return prev;
+    },
+    {
+      entries,
+      maxValue: 0,
+      minDate: timeOption === TimeOption.ALL_TIME ? new Date() : time,
+    } as ChartResults
+  );
+  return results;
 };
 
 const listEntriesChartByNameId = async (nameId: string, time: string) => {
