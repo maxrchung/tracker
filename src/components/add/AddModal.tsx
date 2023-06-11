@@ -58,7 +58,7 @@ export default function AddModal({
     mutationFn: requests.createEntry,
     onSuccess: (_data, { select, name, value }) => {
       onReset();
-      const entryName = select.label === CREATE_NEW_ENTRY ? name : select.label;
+      const entryName = select.value === CREATE_NEW_ENTRY ? name : select.label;
       addSuccess(
         <>
           You added <BoldEntry entryName={entryName} value={value} />.

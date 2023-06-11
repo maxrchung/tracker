@@ -1,4 +1,3 @@
-import ContentLayout from "@cloudscape-design/components/content-layout";
 import Container from "@cloudscape-design/components/container";
 import Header from "@cloudscape-design/components/header";
 import LineChart from "@cloudscape-design/components/line-chart";

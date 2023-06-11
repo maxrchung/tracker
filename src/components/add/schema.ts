@@ -13,7 +13,7 @@ export const buildSchema = (entryNames: EntryName[]) =>
       .test(
         "required",
         "Type is required.",
-        (select) => select && !!select.label && !!select.value
+        (select) => select && !!select.value
       ),
     name: yup.string().when("select", {
       is: (select: SelectProps.Option | null) =>

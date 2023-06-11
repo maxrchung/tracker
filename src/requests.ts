@@ -180,10 +180,7 @@ const createEntry = async (entry: AddSchema) => {
 
   // Create entry name if new
   if (entryNameId === CREATE_NEW_ENTRY) {
-    const name =
-      (entry.select.label === CREATE_NEW_ENTRY
-        ? entry.name?.trim() // Trim so we don't get some weird spacing
-        : entry.select.label) ?? "";
+    const name = entry.name?.trim() ?? ""; // Trim so we don't get some weird spacing
     const input: CreateEntryNameInput = { name };
 
     const createEntryName = await API.graphql<

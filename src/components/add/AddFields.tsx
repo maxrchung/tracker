@@ -14,7 +14,6 @@ interface AddEntryFieldsProps {
 export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
   const select = useWatch({ name: "select" });
   const setAddEntrySelect = useApplicationStore((state) => state.setAddSelect);
-
   return (
     <SpaceBetween size="l">
       <Controller
@@ -50,7 +49,7 @@ export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
         }}
       />
 
-      {select?.label === CREATE_NEW_ENTRY && (
+      {select?.value === CREATE_NEW_ENTRY && (
         <Controller
           name="name"
           render={({ field, fieldState: { error } }) => {
