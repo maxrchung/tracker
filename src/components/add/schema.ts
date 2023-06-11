@@ -36,7 +36,10 @@ export const buildSchema = (entryNames: EntryName[]) =>
             (value) => !entryNames.some((item) => item.name === value)
           ),
     }),
-    value: yup.number(),
+    value: yup
+      .number()
+      .typeError("Value is required.")
+      .required("Value is required."),
   });
 
 // lol? this can't be right

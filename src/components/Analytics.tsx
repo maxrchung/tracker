@@ -7,24 +7,16 @@ import FormField from "@cloudscape-design/components/form-field";
 import Select from "@cloudscape-design/components/select";
 import ColumnLayout from "@cloudscape-design/components/column-layout";
 import SpaceBetween from "@cloudscape-design/components/space-between";
-import { useState } from "react";
 import { TimeOption } from "../types";
 import { useApplicationStore } from "../stores/application";
 import { useQuery } from "@tanstack/react-query";
 import requests from "../requests";
-import {
-  CHART_ALL_ENTRIES,
-  CHART_FREQUENCY,
-  CHART_VALUE,
-  DEFAULT_RESULTS,
-} from "../constants";
+import { DEFAULT_RESULTS } from "../constants";
 import { formatChartDate, formatChartTime, formatTimeZone } from "../time";
 
 export default function Analytics() {
   const chartType = useApplicationStore((state) => state.chartType);
   const setChartType = useApplicationStore((state) => state.setChartType);
-  const chartStat = useApplicationStore((state) => state.chartStat);
-  const setChartStat = useApplicationStore((state) => state.setChartStat);
   const chartTime = useApplicationStore((state) => state.chartTime);
   const setChartTime = useApplicationStore((state) => state.setChartTime);
 
@@ -36,22 +28,18 @@ export default function Analytics() {
         return [];
       }
 
-      const options = [
-        { value: CHART_ALL_ENTRIES },
-        ...entryNames.map(({ name, id }) => ({ label: name, value: id })),
-      ];
+      const options = entryNames.map(({ name, id }) => ({
+        label: name,
+        value: id,
+      }));
       return options;
     },
   });
   const options = listEntryNames.data ?? [];
 
-  const [type, setType] = useState(chartType);
-  const [stat, setStat] = useState(chartStat);
-  const [time, setTime] = useState(chartTime);
-
   const listEntriesChart = useQuery({
-    queryKey: ["listEntriesChart", type, time],
-    queryFn: () => requests.listEntriesChart(type.value, time.value),
+    queryKey: ["listEntriesChart", chartType, chartTime],
+    queryFn: () => requests.listEntriesChart(chartType.value, chartTime.value),
   });
   const { entries, maxValue, minDate } =
     listEntriesChart.data ?? DEFAULT_RESULTS;
@@ -67,37 +55,12 @@ export default function Analytics() {
                 statusType="finished"
                 onChange={(event) => {
                   const type = event.detail.selectedOption;
-                  setType(type);
                   setChartType(type);
-
-                  if (type.value === CHART_ALL_ENTRIES) {
-                    setStat({ value: CHART_FREQUENCY });
-                    setChartStat({ value: CHART_FREQUENCY });
-                  }
                 }}
-                selectedOption={type}
+                selectedOption={chartType}
                 options={options}
                 selectedAriaLabel="Selected"
                 empty="No types"
-              />
-            </FormField>
-
-            <FormField label="Stat">
-              <Select
-                onChange={(event) => {
-                  const stat = event.detail.selectedOption;
-                  setStat(stat);
-                  setChartStat(stat);
-                }}
-                selectedOption={stat}
-                options={[
-                  { value: CHART_FREQUENCY },
-                  {
-                    value: CHART_VALUE,
-                    disabled: type.value === CHART_ALL_ENTRIES,
-                  },
-                ]}
-                selectedAriaLabel="Selected"
               />
             </FormField>
 
@@ -105,10 +68,9 @@ export default function Analytics() {
               <Select
                 onChange={(event) => {
                   const time = event.detail.selectedOption;
-                  setTime(time);
                   setChartTime(time);
                 }}
-                selectedOption={time}
+                selectedOption={chartTime}
                 options={[
                   { value: TimeOption.LAST_DAY },
                   { value: TimeOption.LAST_WEEK },
@@ -131,17 +93,17 @@ export default function Analytics() {
                 ? []
                 : [
                     {
-                      title: type.label ?? "",
+                      title: chartType.label ?? "",
                       type: "line",
                       data: entries.map(({ createdAt, value }) => ({
                         x: new Date(createdAt),
-                        y: stat.value === CHART_FREQUENCY ? 1 : value ?? 0,
+                        y: value,
                       })),
                     },
                   ]
             }
             xDomain={[minDate, new Date()]}
-            yDomain={[0, stat.value === CHART_FREQUENCY ? 0 : maxValue]}
+            yDomain={[0, maxValue]}
             i18nStrings={{
               filterLabel: "Filter displayed data",
               filterPlaceholder: "Filter data",
@@ -160,7 +122,7 @@ export default function Analytics() {
             loadingText="Loading data..."
             xScaleType="time"
             xTitle={`Time ${formatTimeZone()}`}
-            yTitle={stat.label}
+            yTitle="Value"
             empty={
               <Box textAlign="center" color="inherit">
                 <b>No data</b>

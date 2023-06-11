@@ -43,6 +43,7 @@ export default function EditModal({
     resolver: yupResolver(schema),
     values: {
       name: entryName,
+      // @ts-expect-error: Need to purposely set default value as undefined
       value: entry?.value ?? undefined,
     },
   });

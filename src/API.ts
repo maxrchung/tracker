@@ -4,7 +4,7 @@
 
 export type CreateEntryInput = {
   nameId: string,
-  value?: number | null,
+  value: number,
   sortByDate: string,
   createdAt?: string | null,
   id?: string | null,
@@ -75,7 +75,7 @@ export type ModelFloatInput = {
 export type Entry = {
   __typename: "Entry",
   nameId: string,
-  value?: number | null,
+  value: number,
   sortByDate: string,
   createdAt: string,
   id: string,
@@ -254,7 +254,7 @@ export type CreateEntryMutation = {
   createEntry?:  {
     __typename: "Entry",
     nameId: string,
-    value?: number | null,
+    value: number,
     sortByDate: string,
     createdAt: string,
     id: string,
@@ -272,7 +272,7 @@ export type UpdateEntryMutation = {
   updateEntry?:  {
     __typename: "Entry",
     nameId: string,
-    value?: number | null,
+    value: number,
     sortByDate: string,
     createdAt: string,
     id: string,
@@ -290,7 +290,7 @@ export type DeleteEntryMutation = {
   deleteEntry?:  {
     __typename: "Entry",
     nameId: string,
-    value?: number | null,
+    value: number,
     sortByDate: string,
     createdAt: string,
     id: string,
@@ -355,7 +355,7 @@ export type GetEntryQuery = {
   getEntry?:  {
     __typename: "Entry",
     nameId: string,
-    value?: number | null,
+    value: number,
     sortByDate: string,
     createdAt: string,
     id: string,
@@ -376,7 +376,7 @@ export type ListEntriesQuery = {
     items:  Array< {
       __typename: "Entry",
       nameId: string,
-      value?: number | null,
+      value: number,
       sortByDate: string,
       createdAt: string,
       id: string,
@@ -402,7 +402,7 @@ export type EntriesByNameIdAndCreatedAtQuery = {
     items:  Array< {
       __typename: "Entry",
       nameId: string,
-      value?: number | null,
+      value: number,
       sortByDate: string,
       createdAt: string,
       id: string,
@@ -428,7 +428,7 @@ export type EntriesBySortByDateAndCreatedAtQuery = {
     items:  Array< {
       __typename: "Entry",
       nameId: string,
-      value?: number | null,
+      value: number,
       sortByDate: string,
       createdAt: string,
       id: string,
@@ -484,7 +484,7 @@ export type OnCreateEntrySubscription = {
   onCreateEntry?:  {
     __typename: "Entry",
     nameId: string,
-    value?: number | null,
+    value: number,
     sortByDate: string,
     createdAt: string,
     id: string,
@@ -502,7 +502,7 @@ export type OnUpdateEntrySubscription = {
   onUpdateEntry?:  {
     __typename: "Entry",
     nameId: string,
-    value?: number | null,
+    value: number,
     sortByDate: string,
     createdAt: string,
     id: string,
@@ -520,7 +520,7 @@ export type OnDeleteEntrySubscription = {
   onDeleteEntry?:  {
     __typename: "Entry",
     nameId: string,
-    value?: number | null,
+    value: number,
     sortByDate: string,
     createdAt: string,
     id: string,

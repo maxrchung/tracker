@@ -24,7 +24,10 @@ export const buildSchema = (entryNames: EntryName[], entryName: string) =>
           // Don't show error if same as existing
           value === entryName
       ),
-    value: yup.number(),
+    value: yup
+      .number()
+      .typeError("Value is required.")
+      .required("Value is required."),
   });
 
 // lol? this can't be right

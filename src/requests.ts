@@ -26,7 +26,6 @@ import {
   UpdateEntryMutation,
 } from "./API";
 import {
-  CHART_ALL_ENTRIES,
   CREATE_NEW_ENTRY,
   DEFAULT_RESULTS,
   MAX_PAGE,
@@ -133,9 +132,23 @@ const listEntriesChart = async (type?: string, timeOption?: string) => {
   }
 
   const time = getTime(timeOption).toISOString();
-  const entries = await (type === CHART_ALL_ENTRIES
-    ? listEntriesChartByAll(time)
-    : listEntriesChartByNameId(type, time));
+  const variables: EntriesByNameIdAndCreatedAtQueryVariables = {
+    sortDirection: ModelSortDirection.DESC,
+    nameId: type,
+    createdAt: { gt: time },
+  };
+  const query = await API.graphql<
+    GraphQLQuery<EntriesByNameIdAndCreatedAtQuery>
+  >({
+    query: queries.entriesByNameIdAndCreatedAt,
+    variables,
+    authMode: "AMAZON_COGNITO_USER_POOLS",
+  });
+
+  const entries: Entry[] =
+    query.data?.entriesByNameIdAndCreatedAt?.items?.flatMap((item) =>
+      item ? [item] : []
+    ) ?? [];
 
   const results = entries.reduce(
     (prev, curr) => {
@@ -160,48 +173,6 @@ const listEntriesChart = async (type?: string, timeOption?: string) => {
     } as ChartResults
   );
   return results;
-};
-
-const listEntriesChartByNameId = async (nameId: string, time: string) => {
-  const variables: EntriesByNameIdAndCreatedAtQueryVariables = {
-    sortDirection: ModelSortDirection.DESC,
-    nameId,
-    createdAt: { gt: time },
-  };
-  const query = await API.graphql<
-    GraphQLQuery<EntriesByNameIdAndCreatedAtQuery>
-  >({
-    query: queries.entriesByNameIdAndCreatedAt,
-    variables,
-    authMode: "AMAZON_COGNITO_USER_POOLS",
-  });
-
-  const entries: Entry[] =
-    query.data?.entriesByNameIdAndCreatedAt?.items?.flatMap((item) =>
-      item ? [item] : []
-    ) ?? [];
-  return entries;
-};
-
-const listEntriesChartByAll = async (time: string) => {
-  const variables: EntriesBySortByDateAndCreatedAtQueryVariables = {
-    sortDirection: ModelSortDirection.DESC,
-    sortByDate: SORT_KEY,
-    createdAt: { gt: time },
-  };
-  const query = await API.graphql<
-    GraphQLQuery<EntriesBySortByDateAndCreatedAtQuery>
-  >({
-    query: queries.entriesBySortByDateAndCreatedAt,
-    variables,
-    authMode: "AMAZON_COGNITO_USER_POOLS",
-  });
-
-  const entries: Entry[] =
-    query.data?.entriesBySortByDateAndCreatedAt?.items?.flatMap((item) =>
-      item ? [item] : []
-    ) ?? [];
-  return entries;
 };
 
 const createEntry = async (entry: AddSchema) => {
@@ -234,7 +205,7 @@ const createEntry = async (entry: AddSchema) => {
   const input: CreateEntryInput = {
     nameId: entryNameId,
     sortByDate: SORT_KEY,
-    ...(entry.value && { value: entry.value }),
+    value: entry.value,
   };
   await API.graphql<GraphQLQuery<CreateEntryMutation>>({
     query: mutations.createEntry,

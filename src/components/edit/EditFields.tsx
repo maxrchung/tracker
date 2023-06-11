@@ -45,11 +45,7 @@ export default function EditFields({ entryName }: EditFieldsProps) {
           const { onChange, value } = field;
           return (
             <FormField
-              label={
-                <span>
-                  Value <i>- optional</i>
-                </span>
-              }
+              label="Value"
               errorText={error?.message}
               constraintText="Numeric values only."
             >

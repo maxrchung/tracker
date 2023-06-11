@@ -76,11 +76,7 @@ export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
           const { onChange, value } = field;
           return (
             <FormField
-              label={
-                <span>
-                  Value <i>- optional</i>
-                </span>
-              }
+              label="Value"
               errorText={error?.message}
               constraintText="Numeric values only."
             >

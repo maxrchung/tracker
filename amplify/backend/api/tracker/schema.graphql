@@ -4,7 +4,7 @@ type Entry
   @model(timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" })
   @auth(rules: [{ allow: owner }]) {
   nameId: String! @index(sortKeyFields: ["createdAt"])
-  value: Float
+  value: Float!
   # Kind of wack: https://stackoverflow.com/questions/58203635/how-to-sort-by-datecreatedat-on-a-field-in-list-query-in-aws-amplify
   sortByDate: String! @index(sortKeyFields: ["createdAt"])
   createdAt: String!

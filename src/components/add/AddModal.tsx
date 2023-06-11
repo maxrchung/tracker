@@ -44,6 +44,8 @@ export default function AddModal({
     resolver: yupResolver(schema),
     values: {
       select: addSelect,
+      // @ts-expect-error: Need to purposely set default value as undefined
+      value: undefined,
     },
   });
 
