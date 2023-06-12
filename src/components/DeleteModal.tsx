@@ -9,6 +9,8 @@ import type { GraphQLResult } from "@aws-amplify/api";
 import Box from "@cloudscape-design/components/box";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import Button from "@cloudscape-design/components/button";
+import { useApplicationStore } from "../stores/application";
+import { CREATE_NEW_ENTRY } from "../constants";
 
 interface DeleteModalProps {
   isVisible: boolean;
@@ -29,16 +31,23 @@ export default function DeleteModal({
 }: DeleteModalProps) {
   const addSuccess = useNotificationStore((state) => state.addSuccess);
   const addError = useNotificationStore((state) => state.addError);
+  const setAddSelect = useApplicationStore((state) => state.setAddSelect);
+  const setChartType = useApplicationStore((state) => state.setChartType);
   const queryClient = useQueryClient();
 
   const deleteEntry = useMutation({
     mutationFn: requests.deleteEntry,
-    onSuccess: () => {
+    onSuccess: (hasOnlyOne) => {
       addSuccess(
         <>
           You deleted <BoldEntry entryName={entryName} value={entry?.value} />.
         </>
       );
+      // Reset default selections if entry name no longer exists.
+      if (hasOnlyOne) {
+        setAddSelect({ value: CREATE_NEW_ENTRY });
+        setChartType({});
+      }
       onSubmit();
       queryClient.clear();
       resetPage();

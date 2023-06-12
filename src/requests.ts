@@ -228,6 +228,9 @@ const hasOnlyOneEntry = async (nameId: string) => {
   return entries.length === 1;
 };
 
+/** Deletes an entry. If it is the only remaining entry, also cleans up entry
+ * name table. Returns whether entry name table is cleaned up so React side can
+ * update stores. */
 const deleteEntry = async ({ id, nameId }: Entry) => {
   const hasOnlyOne = await hasOnlyOneEntry(nameId);
 
@@ -247,6 +250,7 @@ const deleteEntry = async ({ id, nameId }: Entry) => {
       authMode: "AMAZON_COGNITO_USER_POOLS",
     });
   }
+  return hasOnlyOne;
 };
 
 type EditSchemaWithIds = EditSchema & {
