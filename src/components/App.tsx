@@ -19,7 +19,13 @@ const router = createBrowserRouter(
   )
 );
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity,
+    },
+  },
+});
 
 export default function App() {
   const { user } = useAuthenticator();
