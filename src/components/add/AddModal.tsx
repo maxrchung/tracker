@@ -1,7 +1,7 @@
 import Button from "@cloudscape-design/components/button";
 import Form from "@cloudscape-design/components/form";
 import SpaceBetween from "@cloudscape-design/components/space-between";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type { GraphQLResult } from "@aws-amplify/api"; // ??? idk
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -15,6 +15,7 @@ import BoldEntry from "../BoldEntry";
 import Modal from "@cloudscape-design/components/modal";
 import Box from "@cloudscape-design/components/box";
 import { useApplicationStore } from "../../stores/application";
+import useForceRefetch from "../useForceRefetch";
 
 interface AddModalProps {
   isVisible: boolean;
@@ -27,12 +28,10 @@ export default function AddModal({
   onDismiss,
   resetPage,
 }: AddModalProps) {
-  const addSuccess = useNotificationStore((state) => state.addSuccess);
   const addError = useNotificationStore((state) => state.addError);
   const addSelect = useApplicationStore((state) => state.addSelect);
   const setAddSelect = useApplicationStore((state) => state.setAddSelect);
-
-  const queryClient = useQueryClient();
+  const forceRefetch = useForceRefetch();
 
   const listEntryNames = useQuery({
     queryKey: ["listEntryNames"],
@@ -57,22 +56,12 @@ export default function AddModal({
 
   const createEntry = useMutation({
     mutationFn: requests.createEntry,
-    onSuccess: async (entryNameId, { select, name, value }) => {
+    onSuccess: async (entryNameId, { select, name }) => {
       onReset();
-      const entryName = select.value === CREATE_NEW_ENTRY ? name : select.label;
       if (select.value === CREATE_NEW_ENTRY) {
         setAddSelect({ value: entryNameId, label: name });
       }
-      addSuccess(
-        <>
-          You added <BoldEntry entryName={entryName} value={value} />.
-        </>
-      );
-      queryClient.clear();
-      queryClient.removeQueries();
-      await queryClient.invalidateQueries();
-      await queryClient.resetQueries();
-      await queryClient.cancelQueries();
+      forceRefetch();
       resetPage();
     },
     onError: (error: Error | GraphQLResult, { select, name, value }) => {

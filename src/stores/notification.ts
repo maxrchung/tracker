@@ -5,7 +5,6 @@ import { uid } from "uid";
 
 interface NotificationState {
   messageDefinitions: FlashbarProps.MessageDefinition[];
-  addSuccess: (content: React.ReactNode) => void;
   addError: (content: React.ReactNode) => void;
 }
 
@@ -39,12 +38,6 @@ export const useNotificationStore = create<NotificationState>()(
 
     return {
       messageDefinitions: [],
-      addSuccess: (content: React.ReactNode) => {
-        addNotification({
-          type: "success",
-          content,
-        });
-      },
       addError: (content: React.ReactNode) => {
         addNotification({
           type: "error",

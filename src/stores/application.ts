@@ -5,6 +5,8 @@ import { CREATE_NEW_ENTRY } from "../constants";
 import { TimeOption } from "../types";
 
 interface ApplicationStore {
+  forceRefetch: object;
+  setForceRefetch: () => void;
   addSelect: SelectProps.Option;
   setAddSelect: (option: SelectProps.Option) => void;
   chartType: SelectProps.Option;
@@ -17,6 +19,8 @@ export const useApplicationStore = create<ApplicationStore>()(
   devtools(
     persist(
       (set) => ({
+        forceRefetch: {},
+        setForceRefetch: () => set(() => ({ forceRefetch: {} })),
         addSelect: { value: CREATE_NEW_ENTRY },
         setAddSelect: (option: SelectProps.Option) => {
           set(() => ({ addSelect: option }));

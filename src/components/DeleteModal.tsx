@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Entry } from "../API";
 import Modal from "@cloudscape-design/components/modal";
 import { getErrorMessage } from "../error";
@@ -10,7 +10,7 @@ import Box from "@cloudscape-design/components/box";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import Button from "@cloudscape-design/components/button";
 import { useApplicationStore } from "../stores/application";
-import { CREATE_NEW_ENTRY } from "../constants";
+import useForceRefetch from "./useForceRefetch";
 
 interface DeleteModalProps {
   isVisible: boolean;
@@ -29,22 +29,16 @@ export default function DeleteModal({
   onSubmit,
   resetPage,
 }: DeleteModalProps) {
-  const addSuccess = useNotificationStore((state) => state.addSuccess);
   const addError = useNotificationStore((state) => state.addError);
   const addSelect = useApplicationStore((state) => state.addSelect);
   const setAddSelect = useApplicationStore((state) => state.setAddSelect);
   const chartType = useApplicationStore((state) => state.chartType);
   const setChartType = useApplicationStore((state) => state.setChartType);
-  const queryClient = useQueryClient();
+  const forceRefetch = useForceRefetch();
 
   const deleteEntry = useMutation({
     mutationFn: requests.deleteEntry,
     onSuccess: (hasOnlyOne) => {
-      addSuccess(
-        <>
-          You deleted <BoldEntry entryName={entryName} value={entry?.value} />.
-        </>
-      );
       // Reset default selections if entry name no longer exists.
       if (hasOnlyOne && addSelect.value === entry?.nameId) {
         setAddSelect({});
@@ -53,11 +47,7 @@ export default function DeleteModal({
         setChartType({});
       }
       onSubmit();
-      queryClient.clear();
-      queryClient.removeQueries();
-      queryClient.invalidateQueries();
-      queryClient.resetQueries();
-      queryClient.cancelQueries();
+      forceRefetch();
       resetPage();
     },
     onError: (error: Error | GraphQLResult) => {

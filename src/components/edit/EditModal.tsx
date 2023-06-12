@@ -1,7 +1,7 @@
 import Button from "@cloudscape-design/components/button";
 import Form from "@cloudscape-design/components/form";
 import SpaceBetween from "@cloudscape-design/components/space-between";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type { GraphQLResult } from "@aws-amplify/api"; // ??? idk
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -15,6 +15,7 @@ import { Schema, buildSchema } from "./schema";
 import EditFields from "./EditFields";
 import { Entry } from "../../API";
 import { useApplicationStore } from "../../stores/application";
+import useForceRefetch from "../useForceRefetch";
 
 interface EditModalProps {
   isVisible: boolean;
@@ -29,13 +30,12 @@ export default function EditModal({
   entry,
   entryName,
 }: EditModalProps) {
-  const addSuccess = useNotificationStore((state) => state.addSuccess);
   const addError = useNotificationStore((state) => state.addError);
   const addSelect = useApplicationStore((state) => state.addSelect);
   const setAddSelect = useApplicationStore((state) => state.setAddSelect);
   const chartType = useApplicationStore((state) => state.chartType);
   const setChartType = useApplicationStore((state) => state.setChartType);
-  const queryClient = useQueryClient();
+  const forceRefetch = useForceRefetch();
 
   const listEntryNames = useQuery({
     queryKey: ["listEntryNames"],
@@ -60,13 +60,8 @@ export default function EditModal({
 
   const editEntry = useMutation({
     mutationFn: requests.editEntry,
-    onSuccess: (_data, { name, value }) => {
+    onSuccess: (_data, { name }) => {
       onReset();
-      addSuccess(
-        <>
-          You edited <BoldEntry entryName={name} value={value} />.
-        </>
-      );
       // Change selections if name is updated
       if (addSelect.value === entry?.nameId) {
         setAddSelect({ value: entry?.nameId, label: name });
@@ -74,7 +69,7 @@ export default function EditModal({
       if (chartType.value === entry?.nameId) {
         setChartType({ value: entry?.nameId, label: name });
       }
-      queryClient.clear();
+      forceRefetch();
     },
     onError: (error: Error | GraphQLResult, { name, value }) => {
       addError(
