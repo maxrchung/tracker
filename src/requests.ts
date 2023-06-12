@@ -175,6 +175,8 @@ const listEntriesChart = async (type?: string, timeOption?: string) => {
   return results;
 };
 
+/** Creates a new entry and also figures out how to update entry name table.
+ * Returns entry name ID so we can set store properly. */
 const createEntry = async (entry: AddSchema) => {
   let entryNameId = entry.select.value;
 
@@ -209,6 +211,7 @@ const createEntry = async (entry: AddSchema) => {
     variables: { input },
     authMode: "AMAZON_COGNITO_USER_POOLS",
   });
+  return entryNameId;
 };
 
 const hasOnlyOneEntry = async (nameId: string) => {

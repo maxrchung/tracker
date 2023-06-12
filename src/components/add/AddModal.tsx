@@ -30,6 +30,7 @@ export default function AddModal({
   const addSuccess = useNotificationStore((state) => state.addSuccess);
   const addError = useNotificationStore((state) => state.addError);
   const addSelect = useApplicationStore((state) => state.addSelect);
+  const setAddSelect = useApplicationStore((state) => state.setAddSelect);
 
   const queryClient = useQueryClient();
 
@@ -56,9 +57,12 @@ export default function AddModal({
 
   const createEntry = useMutation({
     mutationFn: requests.createEntry,
-    onSuccess: (_data, { select, name, value }) => {
+    onSuccess: (entryNameId, { select, name, value }) => {
       onReset();
       const entryName = select.value === CREATE_NEW_ENTRY ? name : select.label;
+      if (select.value === CREATE_NEW_ENTRY) {
+        setAddSelect({ value: entryNameId, label: name });
+      }
       addSuccess(
         <>
           You added <BoldEntry entryName={entryName} value={value} />.
