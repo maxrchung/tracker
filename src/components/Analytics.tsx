@@ -10,7 +10,7 @@ import { TimeOption } from "../types";
 import { useApplicationStore } from "../stores/application";
 import { useQuery } from "@tanstack/react-query";
 import requests from "../requests";
-import { DEFAULT_RESULTS } from "../constants";
+import { DEFAULT_RESULTS, REFETCH_INTERVAL } from "../constants";
 import { formatChartDate, formatChartTime, formatTimeZone } from "../time";
 
 export default function Analytics() {
@@ -39,6 +39,7 @@ export default function Analytics() {
   const listEntriesChart = useQuery({
     queryKey: ["listEntriesChart", chartType, chartTime],
     queryFn: () => requests.listEntriesChart(chartType.value, chartTime.value),
+    refetchInterval: REFETCH_INTERVAL,
   });
   const { entries, maxValue, minDate } =
     listEntriesChart.data ?? DEFAULT_RESULTS;
@@ -125,7 +126,7 @@ export default function Analytics() {
             <Box textAlign="center" color="inherit">
               <b>No data</b>
               <Box variant="p" color="inherit">
-                No data to display.
+                No data to display. Select a Type to view analytics.
               </Box>
             </Box>
           }
