@@ -11,4 +11,5 @@ export const DEFAULT_RESULTS: ChartResults = {
   entries: [],
   maxValue: 0,
   minDate: new Date(),
+  maxDate: new Date(),
 };

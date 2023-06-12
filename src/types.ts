@@ -10,4 +10,5 @@ export interface ChartResults {
   entries: Entry[];
   maxValue: number;
   minDate: Date;
+  maxDate: Date;
 }

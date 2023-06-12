@@ -41,7 +41,7 @@ export default function Analytics() {
     queryFn: () => requests.listEntriesChart(chartType.value, chartTime.value),
     refetchInterval: REFETCH_INTERVAL,
   });
-  const { entries, maxValue, minDate } =
+  const { entries, maxValue, minDate, maxDate } =
     listEntriesChart.data ?? DEFAULT_RESULTS;
 
   return (
@@ -101,7 +101,7 @@ export default function Analytics() {
                   },
                 ]
           }
-          xDomain={[minDate, new Date()]}
+          xDomain={[minDate, maxDate]}
           yDomain={[0, maxValue]}
           i18nStrings={{
             filterLabel: "Filter displayed data",

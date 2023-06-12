@@ -164,12 +164,21 @@ const listEntriesChart = async (type?: string, timeOption?: string) => {
         prev.minDate = createdAt;
       }
 
+      // I'm seeing some weird behavior in the table where newly added entries
+      // appear to be placed outside the right side of the chart. I'm guessing this
+      // is due to some timing issue from when the entry was added versus when
+      // the component is rendered. This snippet seems to resolve this.
+      if (createdAt > prev.maxDate) {
+        prev.maxDate = createdAt;
+      }
+
       return prev;
     },
     {
       entries,
       maxValue: 0,
       minDate: timeOption === TimeOption.ALL_TIME ? new Date() : time,
+      maxDate: new Date(),
     } as ChartResults
   );
   return results;
