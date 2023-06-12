@@ -14,6 +14,7 @@ import Box from "@cloudscape-design/components/box";
 import { Schema, buildSchema } from "./schema";
 import EditFields from "./EditFields";
 import { Entry } from "../../API";
+import { useApplicationStore } from "../../stores/application";
 
 interface EditModalProps {
   isVisible: boolean;
@@ -30,6 +31,10 @@ export default function EditModal({
 }: EditModalProps) {
   const addSuccess = useNotificationStore((state) => state.addSuccess);
   const addError = useNotificationStore((state) => state.addError);
+  const addSelect = useApplicationStore((state) => state.addSelect);
+  const setAddSelect = useApplicationStore((state) => state.setAddSelect);
+  const chartType = useApplicationStore((state) => state.chartType);
+  const setChartType = useApplicationStore((state) => state.setChartType);
   const queryClient = useQueryClient();
 
   const listEntryNames = useQuery({
@@ -62,6 +67,13 @@ export default function EditModal({
           You edited <BoldEntry entryName={name} value={value} />.
         </>
       );
+      // Change selections if name is updated
+      if (addSelect.value === entry?.nameId) {
+        setAddSelect({ value: entry?.nameId, label: name });
+      }
+      if (chartType.value === entry?.nameId) {
+        setChartType({ value: entry?.nameId, label: name });
+      }
       queryClient.clear();
     },
     onError: (error: Error | GraphQLResult, { name, value }) => {

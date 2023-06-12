@@ -31,7 +31,9 @@ export default function DeleteModal({
 }: DeleteModalProps) {
   const addSuccess = useNotificationStore((state) => state.addSuccess);
   const addError = useNotificationStore((state) => state.addError);
+  const addSelect = useApplicationStore((state) => state.addSelect);
   const setAddSelect = useApplicationStore((state) => state.setAddSelect);
+  const chartType = useApplicationStore((state) => state.chartType);
   const setChartType = useApplicationStore((state) => state.setChartType);
   const queryClient = useQueryClient();
 
@@ -44,8 +46,10 @@ export default function DeleteModal({
         </>
       );
       // Reset default selections if entry name no longer exists.
-      if (hasOnlyOne) {
-        setAddSelect({ value: CREATE_NEW_ENTRY });
+      if (hasOnlyOne && addSelect.value === entry?.nameId) {
+        setAddSelect({});
+      }
+      if (hasOnlyOne && chartType.value === entry?.nameId) {
         setChartType({});
       }
       onSubmit();
