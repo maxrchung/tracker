@@ -19,8 +19,6 @@ export default function Analytics() {
   const chartTime = useApplicationStore((state) => state.chartTime);
   const setChartTime = useApplicationStore((state) => state.setChartTime);
 
-  console.log("asdf");
-
   const listEntryNames = useQuery({
     queryKey: ["listEntryNamesFilter"],
     queryFn: async () => {
