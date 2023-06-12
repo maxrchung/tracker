@@ -57,7 +57,7 @@ export default function AddModal({
 
   const createEntry = useMutation({
     mutationFn: requests.createEntry,
-    onSuccess: (entryNameId, { select, name, value }) => {
+    onSuccess: async (entryNameId, { select, name, value }) => {
       onReset();
       const entryName = select.value === CREATE_NEW_ENTRY ? name : select.label;
       if (select.value === CREATE_NEW_ENTRY) {
@@ -69,6 +69,10 @@ export default function AddModal({
         </>
       );
       queryClient.clear();
+      queryClient.removeQueries();
+      await queryClient.invalidateQueries();
+      await queryClient.resetQueries();
+      await queryClient.cancelQueries();
       resetPage();
     },
     onError: (error: Error | GraphQLResult, { select, name, value }) => {

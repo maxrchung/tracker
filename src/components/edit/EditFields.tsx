@@ -3,16 +3,9 @@ import Input from "@cloudscape-design/components/input";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import Alert from "@cloudscape-design/components/alert";
 
-import { Controller, useWatch } from "react-hook-form";
-import { Schema } from "./schema";
+import { Controller } from "react-hook-form";
 
-interface EditFieldsProps {
-  entryName: string;
-}
-
-export default function EditFields({ entryName }: EditFieldsProps) {
-  const name = useWatch<Schema>({ name: "name" });
-
+export default function EditFields() {
   return (
     <SpaceBetween size="l">
       <SpaceBetween size="s">
@@ -34,9 +27,7 @@ export default function EditFields({ entryName }: EditFieldsProps) {
           }}
         />
 
-        {name !== entryName && (
-          <Alert type="info">Changing the type affects all entries.</Alert>
-        )}
+        <Alert type="info">Changing the type affects all entries.</Alert>
       </SpaceBetween>
 
       <Controller

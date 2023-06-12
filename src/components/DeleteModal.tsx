@@ -50,6 +50,10 @@ export default function DeleteModal({
       }
       onSubmit();
       queryClient.clear();
+      queryClient.removeQueries();
+      queryClient.invalidateQueries();
+      queryClient.resetQueries();
+      queryClient.cancelQueries();
       resetPage();
     },
     onError: (error: Error | GraphQLResult) => {
@@ -66,7 +70,7 @@ export default function DeleteModal({
     <Modal
       onDismiss={onCancel}
       visible={isVisible}
-      header="Delete entry"
+      header="Delete"
       footer={
         <Box float="right">
           <SpaceBetween direction="horizontal" size="xs">

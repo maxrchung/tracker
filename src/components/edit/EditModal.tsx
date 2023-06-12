@@ -78,7 +78,7 @@ export default function EditModal({
     <Modal
       onDismiss={onReset}
       visible={isVisible}
-      header="Edit entry"
+      header="Edit"
       footer={
         <Box float="right">
           <SpaceBetween direction="horizontal" size="xs">
@@ -114,7 +114,7 @@ export default function EditModal({
           )}
         >
           <Form variant="embedded">
-            <EditFields entryName={entryName} />
+            <EditFields />
           </Form>
         </form>
       </FormProvider>
