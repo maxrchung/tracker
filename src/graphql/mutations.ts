@@ -15,6 +15,7 @@ export const createEntry = /* GraphQL */ `
       id
       updatedAt
       owner
+      __typename
     }
   }
 `;
@@ -31,6 +32,7 @@ export const updateEntry = /* GraphQL */ `
       id
       updatedAt
       owner
+      __typename
     }
   }
 `;
@@ -47,6 +49,7 @@ export const deleteEntry = /* GraphQL */ `
       id
       updatedAt
       owner
+      __typename
     }
   }
 `;
@@ -61,6 +64,7 @@ export const createEntryName = /* GraphQL */ `
       createdAt
       updatedAt
       owner
+      __typename
     }
   }
 `;
@@ -75,6 +79,7 @@ export const updateEntryName = /* GraphQL */ `
       createdAt
       updatedAt
       owner
+      __typename
     }
   }
 `;
@@ -89,6 +94,7 @@ export const deleteEntryName = /* GraphQL */ `
       createdAt
       updatedAt
       owner
+      __typename
     }
   }
 `;

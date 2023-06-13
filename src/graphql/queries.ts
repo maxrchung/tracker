@@ -12,6 +12,7 @@ export const getEntry = /* GraphQL */ `
       id
       updatedAt
       owner
+      __typename
     }
   }
 `;
@@ -30,8 +31,10 @@ export const listEntries = /* GraphQL */ `
         id
         updatedAt
         owner
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -60,8 +63,10 @@ export const entriesByNameIdAndCreatedAt = /* GraphQL */ `
         id
         updatedAt
         owner
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -90,8 +95,10 @@ export const entriesBySortByDateAndCreatedAt = /* GraphQL */ `
         id
         updatedAt
         owner
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -103,6 +110,7 @@ export const getEntryName = /* GraphQL */ `
       createdAt
       updatedAt
       owner
+      __typename
     }
   }
 `;
@@ -119,8 +127,10 @@ export const listEntryNames = /* GraphQL */ `
         createdAt
         updatedAt
         owner
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
