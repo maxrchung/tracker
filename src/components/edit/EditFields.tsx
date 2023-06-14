@@ -27,7 +27,9 @@ export default function EditFields() {
           }}
         />
 
-        <Alert type="info">Changing the type affects all entries.</Alert>
+        <Alert type="info">
+          Changing the type affects all similar entries.
+        </Alert>
       </SpaceBetween>
 
       <Controller
