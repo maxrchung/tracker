@@ -7,11 +7,11 @@ import { EntryName } from "../../API";
 import { CREATE_NEW_ENTRY } from "../../constants";
 import { useApplicationStore } from "../../stores/application";
 
-interface AddEntryFieldsProps {
+interface AddFieldsProps {
   entryNames?: EntryName[];
 }
 
-export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
+export default function AddFields({ entryNames }: AddFieldsProps) {
   const select = useWatch({ name: "select" });
   const setAddEntrySelect = useApplicationStore((state) => state.setAddSelect);
   return (
@@ -58,6 +58,7 @@ export default function AddEntryFields({ entryNames }: AddEntryFieldsProps) {
               <FormField label="New type" errorText={error?.message}>
                 <Input
                   {...field}
+                  name="New type"
                   value={value ?? ""}
                   onChange={(event) => onChange(event.detail.value)}
                   type="text"

@@ -10,7 +10,7 @@ import { getErrorMessage } from "../../error";
 import { Schema, buildSchema } from "./schema";
 import requests from "../../requests";
 import { CREATE_NEW_ENTRY } from "../../constants";
-import EditFields from "./AddFields";
+import AddFields from "./AddFields";
 import BoldEntry from "../BoldEntry";
 import Modal from "@cloudscape-design/components/modal";
 import Box from "@cloudscape-design/components/box";
@@ -101,7 +101,7 @@ export default function AddModal({
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit((data) => createEntry.mutate(data))}>
           <Form variant="embedded">
-            <EditFields entryNames={listEntryNames.data} />
+            <AddFields entryNames={listEntryNames.data} />
           </Form>
         </form>
       </FormProvider>
