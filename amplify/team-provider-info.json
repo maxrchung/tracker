@@ -20,6 +20,12 @@
       },
       "analytics": {
         "tracker": {}
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d3piwft40grsdd",
+          "type": "cicd"
+        }
       }
     }
   },
